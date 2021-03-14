@@ -1,0 +1,3 @@
+setuptools~=41.2.0
+Pygments~=2.8.0
+requests~=2.25.1
