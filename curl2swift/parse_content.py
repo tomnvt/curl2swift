@@ -1,6 +1,6 @@
 from collections import namedtuple
 
-import pyperclip
+import pyp3rclip
 from ast import literal_eval
 import sys
 from curl2swift.parse_context import parse_context
@@ -10,7 +10,7 @@ ParsedContent = namedtuple('ParsedContent', 'request_name, url, method, path, he
 
 def parse_content(parser):
     test_curl = "curl -i https://api.github.com/users/defunkt"
-    curl = pyperclip.paste()
+    curl = pyp3rclip.paste()
     curl = curl.replace('--location', '')
     curl = curl.replace('--request', '-X')
     curl = curl.replace('\\\n', '')
