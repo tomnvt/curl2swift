@@ -10,11 +10,11 @@ README = (HERE / "README.md").read_text()
 # This call to setup() does all the work
 setup(
     name="curl2swift",
-    version="0.0.8",
+    version="0.1.0",
     description="Tool for transforming cURL to Swift code.",
     long_description=README,
     long_description_content_type="text/markdown",
-    url="",
+    url="https://gitlab.com/tomnvt/curl2swift",
     author="Tom Novotny",
     author_email="tom.novota@gmail.com",
     license="MIT",
