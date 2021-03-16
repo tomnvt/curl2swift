@@ -9,7 +9,8 @@ TEST_TEMPLATE = """
             .rx
             .makeRequest()
             .mapTo(<REQUEST_NAME>Request.Response.self)
-            .do(onSuccess: { _ in expectation.fulfill() })
+            .do(onSuccess: { _ in expectation.fulfill() },
+                onError: { _ in XCTFail("The request should succeed") })
             .discardableSubscribe()
         wait(for: [expectation], timeout: 10)
     }
