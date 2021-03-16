@@ -14,6 +14,7 @@ def process_request_template(curl, parser, content: ParsedContent, header_rows, 
     two_level_indent_sep = '\n        '
     processed_template = REQUEST_TEMPLATE
     processed_template = processed_template.replace('<REQUEST_NAME>', content.request_name)
+    processed_template = processed_template.replace('<DESC>', content.description)
     processed_template = processed_template.replace('<PATH>', content.path)
     processed_template = processed_template.replace('<METHOD>', '.' + content.method.lower())
 

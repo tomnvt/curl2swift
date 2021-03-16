@@ -40,7 +40,7 @@ BODY_PARAM_SETTER = \
     }"""
 
 REQUEST_TEMPLATE = """
-/// Add docs
+/// <DESC>
 class <REQUEST_NAME>Request: RequestSpecBuilder {
 
     <RESPONSE>

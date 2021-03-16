@@ -5,7 +5,7 @@ from ast import literal_eval
 import sys
 from curl2swift.parse_context import parse_context
 
-ParsedContent = namedtuple('ParsedContent', 'request_name, url, method, path, headers, header_names, param_names, path_param_rows')
+ParsedContent = namedtuple('ParsedContent', 'request_name, description, url, method, path, headers, header_names, param_names, path_param_rows')
 
 
 def parse_content(parser):
@@ -46,7 +46,12 @@ def parse_content(parser):
     except IndexError:
         print("Request name missing.")
         request_name = 'Test'
-        # exit(0)
+    
+    try:
+        description = args[1]
+    except IndexError:
+        print('Request description missing.')
+        description = '/// Add description'
 
     print('URL: ', url)
     print('Request name:' , request_name)
@@ -56,5 +61,5 @@ def parse_content(parser):
     print('Found headers: ' + str(header_names))
     print('Found body params: ' + str(param_names))
 
-    content = ParsedContent(request_name, url, method, path, headers, header_names, param_names, path_param_rows)
+    content = ParsedContent(request_name, description, url, method, path, headers, header_names, param_names, path_param_rows)
     return curl, content
