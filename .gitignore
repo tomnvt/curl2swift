@@ -10,3 +10,4 @@ venv/
 .DS_STORE
 notes.txt
 curls.py
+debug.log

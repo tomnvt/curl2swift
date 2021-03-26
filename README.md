@@ -14,7 +14,7 @@ because it depends on some code that is specific to the project for which this t
 
 ### USAGE
 1. Copy a cURL into the clipboard.
-2. Call `curl2swift` and pass a request name, e.g. `curl2swift TestRequest`.
+2. Call `curl2swift` and pass a request name and (optional) description, e.g. `curl2swift TestRequest "Call test request"`.
 3. Processed request template is printed out with a promt if user wants to copy it.
 4. Processed test template is printed out with the same promt.
 

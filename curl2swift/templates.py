@@ -45,6 +45,10 @@ class <REQUEST_NAME>Request: RequestSpecBuilder {
 
     <RESPONSE>
 
+    enum QueryParameter: String {
+        <QUERY_PARAMS>
+    }
+
     enum PathParameter: String {
         <PATH_PARAMS>
     }
@@ -59,9 +63,10 @@ class <REQUEST_NAME>Request: RequestSpecBuilder {
 
     required init(baseURL: String = "",
                   path: String = "",
+                  queryParams: [String: String],
                   method: HTTPMethod = .get,
                   headers: [String: String] = [:],
-                  params: [String: String] = [:]) {
+                  params: [String: Any] = [:]) {
         super.init(baseURL: baseURL, path: path, method: method, headers: headers, params: params)
         set(.path("<PATH>"))
         set(.method(<METHOD>))
@@ -69,6 +74,8 @@ class <REQUEST_NAME>Request: RequestSpecBuilder {
 }
 
 extension <REQUEST_NAME>Request {
+
+    <QUERY_PARAM_SETTER>
 
     <PATH_PARAM_SETTER>
 
@@ -79,7 +86,7 @@ extension <REQUEST_NAME>Request {
 """
 
 CODABLE_TEMPLATE = """
-    struct Response: Codable {
+    struct <MODEL_NAME>: Codable {
         <PROPERTIES>
 
         enum CodingKeys: String, CodingKey {
