@@ -14,7 +14,7 @@ setup(
     description="Tool for transforming cURL to Swift code.",
     long_description=README,
     long_description_content_type="text/markdown",
-    url="https://gitlab.com/tomnvt/curl2swift",
+    url="https://github.com/tomnvt/curl2swift",
     author="Tom Novotny",
     author_email="tom.novota@gmail.com",
     license="MIT",
