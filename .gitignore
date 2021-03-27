@@ -11,3 +11,5 @@ venv/
 notes.txt
 curls.py
 debug.log
+deploy_test.sh
+deploy_prod.sh

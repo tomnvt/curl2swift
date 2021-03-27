@@ -1,0 +1,25 @@
+version: 2.1
+
+orbs:
+  python: circleci/python@0.2.1
+
+jobs:
+  build-and-test:
+    executor: python/default
+    steps:
+      - checkout
+      - python/install-deps
+      - run:
+          command: pytest curl2swift/tests
+          name: Test
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build-and-test:
+          filters:
+            branches:
+              only:
+                - dev
+                - master
