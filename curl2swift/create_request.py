@@ -10,10 +10,12 @@ def create_request(curl_command, parser):
 
     data_token = ''
     if parsed_context.data:
-        data_token = '{}data=\'{}\',\n'.format(BASE_INDENT, parsed_context.data)
+        data_token = '{}data=\'{}\',\n'\
+            .format(BASE_INDENT, parsed_context.data)
 
     if parsed_context.data_urlencode:
-        data_token = '{}data=\'{}\',\n'.format(BASE_INDENT, '&'.join(parsed_context.data_urlencode))
+        data_token = '{}data=\'{}\',\n'\
+            .format(BASE_INDENT, '&'.join(parsed_context.data_urlencode))
 
     verify_token = ''
     if parsed_context.verify:
@@ -25,8 +27,10 @@ def create_request(curl_command, parser):
         'method': parsed_context.method,
         'url': parsed_context.url,
         'data_token': data_token,
-        'headers_token': "{}headers={}".format(BASE_INDENT, dict_to_pretty_string(parsed_context.headers)),
-        'cookies_token': "{}cookies={}".format(BASE_INDENT, dict_to_pretty_string(parsed_context.cookies)),
+        'headers_token': "{}headers={}"\
+            .format(BASE_INDENT, dict_to_pretty_string(parsed_context.headers)),
+        'cookies_token': "{}cookies={}"\
+            .format(BASE_INDENT, dict_to_pretty_string(parsed_context.cookies)),
         'security_token': verify_token,
         'auth': auth_data
     }

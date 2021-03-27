@@ -1,5 +1,5 @@
 import pathlib
-from setuptools import setup
+from setuptools import setup, find_packages
 
 # The directory containing this file
 HERE = pathlib.Path(__file__).parent
@@ -10,7 +10,7 @@ README = (HERE / "README.md").read_text()
 # This call to setup() does all the work
 setup(
     name="curl2swift",
-    version="0.1.6",
+    version="0.1.6.1",
     description="Tool for transforming cURL to Swift code.",
     long_description=README,
     long_description_content_type="text/markdown",
@@ -23,7 +23,7 @@ setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.7",
     ],
-    packages=["curl2swift"],
+    packages=find_packages(include=["curl2swift", "curl2swift.*"]),
     include_package_data=True,
     install_requires=["Pygments", "requests", "pyp3rclip"],
     entry_points={

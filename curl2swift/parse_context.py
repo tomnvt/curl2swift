@@ -54,4 +54,3 @@ def parse_context(curl_command, parser):
         auth=user,
         data_urlencode=data_urlencoded
     )
-

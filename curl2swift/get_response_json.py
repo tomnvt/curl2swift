@@ -1,3 +1,4 @@
+# pylint: disable=unused-import, exec-used, invalid-name
 import requests
 
 _response_json = ''

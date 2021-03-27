@@ -1,10 +1,11 @@
-from curl2swift.logger import logging
+
 import subprocess
+import re
 
 from curl2swift.parse_content import ParsedContent
-from curl2swift.templates import *
-import re
-from curl2swift.create_request import create_request
+from curl2swift.templates.request_templates import REQUEST_TEMPLATE, QUERY_PARAM_SETTER,\
+     PATH_PARAM_SETTER, HEADER_PARAM_SETTER, BODY_PARAM_SETTER
+from curl2swift.logger import logging
 from curl2swift.pprint_color import pprint_color
 
 
@@ -17,42 +18,56 @@ def process_request_template(content: ParsedContent, header_rows, body_param_row
     processed_template = processed_template.replace('<PATH>', content.path)
     processed_template = processed_template.replace('<METHOD>', '.' + content.method.lower())
 
-    processed_template = processed_template.replace('<HEADERS>', two_level_indent_sep.join(header_rows))
-    processed_template = processed_template.replace('<BODY_PARAMS>', two_level_indent_sep.join(body_param_rows))
+    processed_template = processed_template\
+        .replace('<HEADERS>', two_level_indent_sep.join(header_rows))
+    processed_template = processed_template\
+        .replace('<BODY_PARAMS>', two_level_indent_sep.join(body_param_rows))
 
     if content.query_params:
         processed_template = processed_template.replace('<QUERY_PARAM_SETTER>', QUERY_PARAM_SETTER)
         query_param_key_cases = ['case ' + key for key in list(content.query_params.keys())]
-        processed_template = processed_template.replace('<QUERY_PARAMS>', two_level_indent_sep.join(query_param_key_cases))
+        processed_template = processed_template\
+            .replace('<QUERY_PARAMS>', two_level_indent_sep.join(query_param_key_cases))
         query_param_init_rows = []
         for query_param_key in content.query_params:
-            query_param_init_rows.append('set(.queryParams(["' + query_param_key + '": "' 
+            query_param_init_rows.append('set(.queryParams(["' + query_param_key + '": "'
             + content.query_params[query_param_key] + '"]))')
-        processed_template = processed_template.replace('<QUERY_PARAMS_INIT>', two_level_indent_sep.join(query_param_init_rows))
+        processed_template = processed_template\
+            .replace('<QUERY_PARAMS_INIT>', two_level_indent_sep.join(query_param_init_rows))
     else:
-        processed_template = re.sub('\n\s*enum QueryParam: String \{\n\s*\}', '', processed_template)
-        processed_template = re.sub('\n\s*<QUERY_PARAMS>', '', processed_template)
-        processed_template = re.sub('\n\s*<QUERY_PARAMS_INIT>', '', processed_template)
-        processed_template = re.sub('\n\s*<QUERY_PARAM_SETTER>', '', processed_template)
+        processed_template = re\
+            .sub(r'\n\s*enum QueryParam: String \{\n\s*\}', '', processed_template)
+        processed_template = re\
+            .sub(r'\n\s*<QUERY_PARAMS>', '', processed_template)
+        processed_template = re\
+            .sub(r'\n\s*<QUERY_PARAMS_INIT>', '', processed_template)
+        processed_template = re\
+            .sub(r'\n\s*<QUERY_PARAM_SETTER>', '', processed_template)
 
-    processed_template = processed_template.replace('<PATH_PARAMS>', two_level_indent_sep.join(content.path_param_rows))
+    processed_template = processed_template\
+        .replace('<PATH_PARAMS>', two_level_indent_sep.join(content.path_param_rows))
     if content.path_param_rows:
-        processed_template = processed_template.replace('<PATH_PARAM_SETTER>', PATH_PARAM_SETTER)
+        processed_template = processed_template\
+            .replace('<PATH_PARAM_SETTER>', PATH_PARAM_SETTER)
     else:
-        processed_template = re.sub('\n\s*enum PathParameter: String \{\n\s*\}', '', processed_template)
-        processed_template = re.sub('\n\s*<PATH_PARAM_SETTER>', '', processed_template)
+        processed_template = re\
+            .sub(r'\n\s*enum PathParameter: String \{\n\s*\}', '', processed_template)
+        processed_template = re\
+            .sub(r'\n\s*<PATH_PARAM_SETTER>', '', processed_template)
 
     if content.headers:
-        processed_template = processed_template.replace('<HEADER_PARAM_SETTER>', HEADER_PARAM_SETTER)
+        processed_template = processed_template\
+            .replace('<HEADER_PARAM_SETTER>', HEADER_PARAM_SETTER)
     else:
-        processed_template = re.sub('\n\s*enum Header: String \{\n\s*\}', '', processed_template)
-        processed_template = re.sub('\n\s*<HEADER_PARAM_SETTER>', '', processed_template)
+        processed_template = re.sub(r'\n\s*enum Header: String \{\n\s*\}', '', processed_template)
+        processed_template = re.sub(r'\n\s*<HEADER_PARAM_SETTER>', '', processed_template)
 
     if body_param_rows:
-        processed_template = processed_template.replace('<BODY_PARAM_SETTER>', BODY_PARAM_SETTER)
+        processed_template = processed_template\
+            .replace('<BODY_PARAM_SETTER>', BODY_PARAM_SETTER)
     else:
-        processed_template = re.sub('\n\s*enum BodyParameter: String \{\n\s*\}', '', processed_template)
-        processed_template = re.sub('\n\s*<BODY_PARAM_SETTER>', '', processed_template)
+        processed_template = re.sub(r'\n\s*enum BodyParameter: String \{\n\s*\}', '', processed_template)
+        processed_template = re.sub(r'\n\s*<BODY_PARAM_SETTER>', '', processed_template)
 
     processed_template = processed_template.replace('<RESPONSE>', response_model)
 

@@ -1,5 +1,5 @@
-from curl2swift.create_response_model import create_response_model
 from ast import literal_eval
+from curl2swift.create_response_model import create_response_model
 
 response_json = """
 {
@@ -79,5 +79,4 @@ expected_result = """
 def test_create_response_model():
     json_dict = literal_eval(response_json)
     response_model = create_response_model(json_dict)
-    print(response_model)
     assert response_model.strip() == expected_result.strip()
