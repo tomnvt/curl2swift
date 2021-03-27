@@ -2,11 +2,11 @@
 import subprocess
 import re
 
-from curl2swift.parse_content import ParsedContent
+from curl2swift.parsing.parse_content import ParsedContent
 from curl2swift.templates.request_templates import REQUEST_TEMPLATE, QUERY_PARAM_SETTER,\
      PATH_PARAM_SETTER, HEADER_PARAM_SETTER, BODY_PARAM_SETTER
-from curl2swift.logger import logging
-from curl2swift.pprint_color import pprint_color
+from curl2swift.utils.logger import logging
+from curl2swift.utils.pprint_color import pprint_color
 
 
 def process_request_template(content: ParsedContent, header_rows, body_param_rows, response_model):

@@ -1,4 +1,4 @@
-import logging
+from curl2swift.utils.logger import logging
 
 def prepare_enum_cases(names, enum_type):
     logging.info('Preparing enum cases for enum type ' + enum_type + ' with names ' + str(names))

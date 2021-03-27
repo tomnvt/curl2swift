@@ -5,8 +5,8 @@ from urllib.parse import urlparse
 import sys
 import pyp3rclip
 
-from curl2swift.logger import logging
-from curl2swift.parse_context import parse_context
+from curl2swift.utils.logger import logging
+from curl2swift.parsing.parse_context import parse_context
 
 ParsedContent = namedtuple('ParsedContent', (
     'request_name, description,\

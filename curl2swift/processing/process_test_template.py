@@ -1,9 +1,9 @@
 import subprocess
 import re
 
-from curl2swift.logger import logging
+from curl2swift.utils.logger import logging
 from curl2swift.templates.test_template import TEST_TEMPLATE
-from curl2swift.pprint_color import pprint_color
+from curl2swift.utils.pprint_color import pprint_color
 
 
 def process_test_template(header_rows, body_param_rows, content):

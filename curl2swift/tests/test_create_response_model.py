@@ -1,7 +1,7 @@
 from ast import literal_eval
-from curl2swift.create_response_model import create_response_model
+from curl2swift.processing.create_response_model import create_response_model
 
-response_json = """
+RESPONSE_JSON = """
 {
   "Markets": [
     {
@@ -34,7 +34,7 @@ response_json = """
 }
 """.strip()
 
-expected_result = """
+EXPECTED_RESULT = """
     struct Response: Codable {
         let markets : [Market]?
 
@@ -77,6 +77,6 @@ expected_result = """
 """
 
 def test_create_response_model():
-    json_dict = literal_eval(response_json)
+    json_dict = literal_eval(RESPONSE_JSON)
     response_model = create_response_model(json_dict)
-    assert response_model.strip() == expected_result.strip()
+    assert response_model.strip() == EXPECTED_RESULT.strip()

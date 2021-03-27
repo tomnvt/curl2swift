@@ -1,13 +1,14 @@
 # __main__.py
-from curl2swift.create_request import create_request
-from curl2swift.get_response_json import get_response_json
-from curl2swift.create_response_model import create_response_model
-from curl2swift.get_parser import get_parser
-from curl2swift.process_test_template import process_test_template
-from curl2swift.process_request_template import process_request_template
-from curl2swift.parse_content import parse_content
-from curl2swift.prepare_enum_cases import prepare_enum_cases
-import curl2swift.logger as logger
+from curl2swift.parsing.get_parser import get_parser
+from curl2swift.parsing.parse_content import parse_content
+
+from curl2swift.processing.create_request import create_request
+from curl2swift.processing.get_response_json import get_response_json
+from curl2swift.processing.create_response_model import create_response_model
+from curl2swift.processing.process_test_template import process_test_template
+from curl2swift.processing.process_request_template import process_request_template
+from curl2swift.processing.prepare_enum_cases import prepare_enum_cases
+import curl2swift.utils.logger as logger
 
 def main():
     logger.setup()

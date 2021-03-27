@@ -1,4 +1,4 @@
-import logging
+from curl2swift.utils.logger import logging
 from curl2swift.templates.codable_template import CODABLE_TEMPLATE
 
 
