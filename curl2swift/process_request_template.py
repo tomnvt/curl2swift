@@ -1,3 +1,4 @@
+from curl2swift.logger import logging
 import subprocess
 
 from curl2swift.parse_content import ParsedContent
@@ -8,6 +9,7 @@ from curl2swift.pprint_color import pprint_color
 
 
 def process_request_template(content: ParsedContent, header_rows, body_param_rows, response_model):
+    logging.info('Processing request template')
     two_level_indent_sep = '\n        '
     processed_template = REQUEST_TEMPLATE
     processed_template = processed_template.replace('<REQUEST_NAME>', content.request_name)

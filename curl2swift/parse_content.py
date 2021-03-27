@@ -4,28 +4,33 @@ import pyp3rclip
 from ast import literal_eval
 import sys
 from urllib.parse import urlparse
-import logging
+from curl2swift.logger import logging
 from curl2swift.parse_context import parse_context
 
 ParsedContent = namedtuple('ParsedContent', 'request_name, description, url, method, path, query_params, headers, header_names, param_names, path_param_rows')
 
 
 def parse_content(parser):
-    logging.info('Parsing content')
     test_curl = "curl -i https://api.github.com/users/defunkt"
 
+    logging.info('Reading curl from clipboard')
     curl = pyp3rclip.paste()
     curl = curl.replace('--location', '')
     curl = curl.replace('-v', '')
     curl = curl.replace('--request', '-X')
     curl = curl.replace('\\\n', '')
+    logging.info('cURL after cleanup: ' + curl)
 
     try:
+        logging.info('Parsing cURL')
         context = parse_context(curl, parser)
     except:
-        logging.error('Parsing failed')
+        logging.error('Parsing failed (see usage above)')
+        logging.info('Falling back to test cURL')
         curl = test_curl
         context = parse_context(test_curl, parser)
+
+    logging.info('Transforming cURL to Python request object')
     path_param_rows = []
     param_names = []
     method = context.method
@@ -52,7 +57,7 @@ def parse_content(parser):
     try:
         request_name = args[0]
     except IndexError:
-        logging.error("Request name missing.")
+        logging.warning("Request name missing.")
         request_name = 'Test'
     
     try:
@@ -71,4 +76,5 @@ def parse_content(parser):
     logging.info('Found body params: ' + str(param_names))
 
     content = ParsedContent(request_name, description, url, method, path, query_params, headers, header_names, param_names, path_param_rows)
+    logging.warning("Content parsed.")
     return curl, content

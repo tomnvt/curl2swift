@@ -1,3 +1,4 @@
+from curl2swift.logger import logging
 import re
 from curl2swift.templates import *
 from curl2swift.pprint_color import pprint_color
@@ -5,6 +6,7 @@ import subprocess
 
 
 def process_test_template(header_rows, body_param_rows, content):
+    logging.info('Processing unit test templacte')
     header_setters = []
     for index, header in enumerate(content.headers):
         value = content.headers[header]

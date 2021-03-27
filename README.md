@@ -131,8 +131,7 @@ GENERATED TEST:
         TestRequest()
             .set(.baseURL("https://api.github.com"))
             .set(.path("/users/defunkt"))
-            .rx
-            .makeRequest()
+            .makeRxRequest()
             .mapTo(TestRequest.Response.self)
             .do(onSuccess: { _ in expectation.fulfill() })
             .discardableSubscribe()

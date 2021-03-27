@@ -6,8 +6,7 @@ TEST_TEMPLATE = """
             .set(.path("<PATH>"))
             <HEADER_SETTERS>
             <BODY_PARAM_SETTERS>
-            .rx
-            .makeRequest()
+            .makeRxRequest()
             .mapTo(<REQUEST_NAME>Request.Response.self)
             .do(onSuccess: { _ in expectation.fulfill() },
                 onError: { _ in XCTFail("The request should succeed") })
