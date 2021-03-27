@@ -18,6 +18,21 @@ def process_request_template(content: ParsedContent, header_rows, body_param_row
     processed_template = processed_template.replace('<HEADERS>', two_level_indent_sep.join(header_rows))
     processed_template = processed_template.replace('<BODY_PARAMS>', two_level_indent_sep.join(body_param_rows))
 
+    if content.query_params:
+        processed_template = processed_template.replace('<QUERY_PARAM_SETTER>', QUERY_PARAM_SETTER)
+        query_param_key_cases = ['case ' + key for key in list(content.query_params.keys())]
+        processed_template = processed_template.replace('<QUERY_PARAMS>', two_level_indent_sep.join(query_param_key_cases))
+        query_param_init_rows = []
+        for query_param_key in content.query_params:
+            query_param_init_rows.append('set(.queryParams(["' + query_param_key + '": "' 
+            + content.query_params[query_param_key] + '"]))')
+        processed_template = processed_template.replace('<QUERY_PARAMS_INIT>', two_level_indent_sep.join(query_param_init_rows))
+    else:
+        processed_template = re.sub('\n\s*enum QueryParam: String \{\n\s*\}', '', processed_template)
+        processed_template = re.sub('\n\s*<QUERY_PARAMS>', '', processed_template)
+        processed_template = re.sub('\n\s*<QUERY_PARAMS_INIT>', '', processed_template)
+        processed_template = re.sub('\n\s*<QUERY_PARAM_SETTER>', '', processed_template)
+
     processed_template = processed_template.replace('<PATH_PARAMS>', two_level_indent_sep.join(content.path_param_rows))
     if content.path_param_rows:
         processed_template = processed_template.replace('<PATH_PARAM_SETTER>', PATH_PARAM_SETTER)

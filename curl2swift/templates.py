@@ -1,7 +1,7 @@
 TEST_TEMPLATE = """
     func test<REQUEST_NAME>Request() {
         let expectation = XCTestExpectation(description: "waiting for reponse")
-        let builder = <REQUEST_NAME>Request()
+        <REQUEST_NAME>Request()
             .set(.baseURL("<URL>"))
             .set(.path("<PATH>"))
             <HEADER_SETTERS>
@@ -13,6 +13,14 @@ TEST_TEMPLATE = """
                 onError: { _ in XCTFail("The request should succeed") })
             .discardableSubscribe()
         wait(for: [expectation], timeout: 10)
+    }
+"""
+
+QUERY_PARAM_SETTER = """
+    @discardableResult
+    func setQueryParam(_ key: QueryParam, _ value: String) -> Self {
+        queryParams[key.rawValue] = value
+        return self
     }
 """
 
@@ -45,7 +53,7 @@ class <REQUEST_NAME>Request: RequestSpecBuilder {
 
     <RESPONSE>
 
-    enum QueryParameter: String {
+    enum QueryParam: String {
         <QUERY_PARAMS>
     }
 
@@ -63,12 +71,13 @@ class <REQUEST_NAME>Request: RequestSpecBuilder {
 
     required init(baseURL: String = "",
                   path: String = "",
-                  queryParams: [String: String],
+                  queryParams: [String: String] = [:],
                   method: HTTPMethod = .get,
                   headers: [String: String] = [:],
                   params: [String: Any] = [:]) {
         super.init(baseURL: baseURL, path: path, method: method, headers: headers, params: params)
         set(.path("<PATH>"))
+        <QUERY_PARAMS_INIT>
         set(.method(<METHOD>))
     }
 }

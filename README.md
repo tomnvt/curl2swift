@@ -128,7 +128,7 @@ GENERATED TEST:
 
     func testTestRequest() {
         let expectation = XCTestExpectation(description: "waiting for reponse")
-        let builder = TestRequest()
+        TestRequest()
             .set(.baseURL("https://api.github.com"))
             .set(.path("/users/defunkt"))
             .rx
