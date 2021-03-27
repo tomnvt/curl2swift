@@ -6,7 +6,7 @@ from curl2swift.templates.test_template import TEST_TEMPLATE
 from curl2swift.utils.pprint_color import pprint_color
 
 
-def process_test_template(header_rows, body_param_rows, content):
+def process_test_template(request_name, header_rows, body_param_rows, content):
     logging.info('Processing unit test templacte')
     header_setters = []
     for index, header in enumerate(content.headers):
@@ -29,7 +29,7 @@ def process_test_template(header_rows, body_param_rows, content):
     processed_template = processed_template.replace('<URL>', content.url)
     processed_template = processed_template.replace('<PATH>', content.path)
 
-    processed_template = processed_template.replace('<REQUEST_NAME>', content.request_name)
+    processed_template = processed_template.replace('<REQUEST_NAME>', request_name)
 
     if content.param_names:
         processed_template = processed_template\

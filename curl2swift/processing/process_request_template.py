@@ -9,12 +9,14 @@ from curl2swift.utils.logger import logging
 from curl2swift.utils.pprint_color import pprint_color
 
 
-def process_request_template(content: ParsedContent, header_rows, body_param_rows, response_model):
+def process_request_template(
+    request_name, description, content: ParsedContent, header_rows, body_param_rows, response_model
+):
     logging.info('Processing request template')
     two_level_indent_sep = '\n        '
     processed_template = REQUEST_TEMPLATE
-    processed_template = processed_template.replace('<REQUEST_NAME>', content.request_name)
-    processed_template = processed_template.replace('<DESC>', content.description)
+    processed_template = processed_template.replace('<REQUEST_NAME>', request_name)
+    processed_template = processed_template.replace('<DESC>', description)
     processed_template = processed_template.replace('<PATH>', content.path)
     processed_template = processed_template.replace('<METHOD>', '.' + content.method.lower())
 
@@ -35,8 +37,10 @@ def process_request_template(content: ParsedContent, header_rows, body_param_row
         processed_template = processed_template\
             .replace('<QUERY_PARAMS_INIT>', two_level_indent_sep.join(query_param_init_rows))
     else:
+        print('deleting query params')
+        print(content.query_params)
         processed_template = re\
-            .sub(r'\n\s*enum QueryParam: String \{\n\s*\}', '', processed_template)
+            .sub(r'\n\s*enum QueryParam: String \{\n.*\n\s*}\n', '', processed_template)
         processed_template = re\
             .sub(r'\n\s*<QUERY_PARAMS>', '', processed_template)
         processed_template = re\
@@ -66,7 +70,8 @@ def process_request_template(content: ParsedContent, header_rows, body_param_row
         processed_template = processed_template\
             .replace('<BODY_PARAM_SETTER>', BODY_PARAM_SETTER)
     else:
-        processed_template = re.sub(r'\n\s*enum BodyParameter: String \{\n\s*\}', '', processed_template)
+        processed_template = re\
+            .sub(r'\n\s*enum BodyParameter: String \{\n\s*\}', '', processed_template)
         processed_template = re.sub(r'\n\s*<BODY_PARAM_SETTER>', '', processed_template)
 
     processed_template = processed_template.replace('<RESPONSE>', response_model)

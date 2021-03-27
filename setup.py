@@ -10,7 +10,7 @@ README = (HERE / "README.md").read_text()
 # This call to setup() does all the work
 setup(
     name="curl2swift",
-    version="0.1.6.1",
+    version="0.2.1",
     description="Tool for transforming cURL to Swift code.",
     long_description=README,
     long_description_content_type="text/markdown",
@@ -25,7 +25,7 @@ setup(
     ],
     packages=find_packages(include=["curl2swift", "curl2swift.*"]),
     include_package_data=True,
-    install_requires=["Pygments", "requests", "pyp3rclip"],
+    install_requires=["Pygments", "requests", "pyp3rclip", "gitpython"],
     entry_points={
         "console_scripts": [
             "curl2swift=curl2swift.__main__:main",
