@@ -75,5 +75,5 @@ def parse_curl_from_clipboard(parser):
     logging.info('Found body params: ' + str(param_names))
 
     content = ParsedContent(url, method, path, query_params, headers, param_names, path_param_rows)
-    logging.warning("Content parsed.")
+    logging.info("Content parsed.")
     return curl, content
