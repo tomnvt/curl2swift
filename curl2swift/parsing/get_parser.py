@@ -1,9 +1,5 @@
 import argparse
 
-def get_main_parser():
-    parser = argparse.ArgumentParser()
-    return parser
-
 def get_curl_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('command')
