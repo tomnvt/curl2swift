@@ -15,7 +15,7 @@ RESPONSE_JSON = """
       "Enabled": False,
       "Configuration": {
           "EverythingOnSale": True
-      },
+      }
     },
     {
       "Code": "az",
@@ -29,7 +29,7 @@ RESPONSE_JSON = """
       "Object": {
           "EverythingOnSale": False
       }
-    },
+    }
   ]
 }
 """.strip()
