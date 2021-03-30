@@ -1,5 +1,5 @@
 from curl2swift.parsing.get_parser import get_curl_parser
-from curl2swift.parsing.parse_content import parse_curl_from_clipboard
+from curl2swift.parsing.parse_content import parse_curl
 from curl2swift.parsing.get_request_name_and_description import get_request_name_and_description
 
 from curl2swift.processing.create_request import create_request
@@ -14,7 +14,7 @@ def run_main_processing():
     parser = get_curl_parser()
 
     request_name, description = get_request_name_and_description()
-    curl, content = parse_curl_from_clipboard(parser)
+    curl, content = parse_curl(parser)
     header_rows = prepare_enum_cases(list(content.headers.keys()), 'header')
     body_param_rows = prepare_enum_cases(content.param_names, 'param')
 

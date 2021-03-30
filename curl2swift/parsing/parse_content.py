@@ -1,6 +1,7 @@
 from collections import namedtuple
 from ast import literal_eval
 from urllib.parse import urlparse
+import sys
 
 import pyp3rclip
 
@@ -18,8 +19,17 @@ ParsedContent = namedtuple('ParsedContent', ('\
 ))
 
 def get_curl():
-    logging.info('Reading curl from clipboard')
-    curl = pyp3rclip.paste()
+    logging.info('Reading curl from --curl option')
+    arguments = ' '.join(sys.argv)
+    if '--curl' in sys.argv:
+        index = sys.argv.index('--curl')
+        curl = sys.argv[index + 1]
+        logging.info('Got cURL from option: ' + curl)
+    else:
+        logging.info('--curl option not used')
+        logging.info('Reading curl from clipboard')
+        curl = pyp3rclip.paste()
+
     curl = curl.replace('--location', '')
     curl = curl.replace('-v', '')
     curl = curl.replace('--request', '-X')
@@ -40,7 +50,7 @@ def get_parameter_names(context):
         return [param.split('=') for param in context.data_urlencode]
     return []
 
-def parse_curl_from_clipboard(parser):
+def parse_curl(parser):
     curl = get_curl()
 
     TEST_CURL = "curl -i https://api.github.com/users/defunkt"
