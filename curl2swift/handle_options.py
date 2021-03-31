@@ -9,10 +9,10 @@ def handle_options():
     options, arguments = getopt.getopt(
         sys.argv[1:],
         "ieb",
-        ["issue", "example", 'boilerplate']
+        ["issue", "example", 'boilerplate', 'curl=']
     )
 
-    for opt, _ in options:
+    for opt, value in options:
         if opt in ["-i", '--issue']:
             webbrowser.open('https://github.com/tomnvt/curl2swift/issues/new')
             sys.exit(0)
@@ -23,3 +23,5 @@ def handle_options():
         if opt in ["-b", "--boilerplate"]:
             clone_repo('https://github.com/tomnvt/curl2swift-boilerplate.git', 'boilerplate code')
             sys.exit(0)
+        if opt in ["-c", "--curl"]:
+            return {'curl': value}
