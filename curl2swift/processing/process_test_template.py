@@ -6,17 +6,17 @@ from curl2swift.templates.test_template import TEST_TEMPLATE
 from curl2swift.utils.pprint_color import pprint_color
 
 
-def process_test_template(request_name, header_rows, body_param_rows, content):
+def process_test_template(request_name, content):
     logging.info('Processing unit test templacte')
     header_setters = []
     for index, header in enumerate(content.headers):
         value = content.headers[header]
-        enum_case = re.findall('case (.*) =', header_rows[index])[0]
+        enum_case = re.findall('case (.*) =', content.header_rows[index])[0]
         header_setters.append('.setHeader(.' + enum_case + ', "' + value + '")')
     body_param_setters = []
     for index, param in enumerate(content.param_names):
         value = param[1]
-        enum_case = re.findall('case (.*) =', body_param_rows[index])[0]
+        enum_case = re.findall('case (.*) =', content.body_param_rows[index])[0]
         body_param_setters.append('.setBodyParameter(.' + enum_case + ', "' + value + '")')
 
     processed_template = TEST_TEMPLATE

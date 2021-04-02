@@ -5,9 +5,7 @@ from curl2swift.parsing.parse_context import parse_context
 BASE_INDENT = " " * 4
 
 
-def create_request(curl_command, parser):
-    parsed_context = parse_context(curl_command, parser)
-
+def create_request(parsed_context):
     data_token = ''
     if parsed_context.data:
         data_token = '{}data=\'{}\',\n'\

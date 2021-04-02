@@ -1,9 +1,11 @@
 from collections import namedtuple
 from ast import literal_eval
+from curl2swift.processing.create_request import create_request
+from curl2swift.processing.get_response_json import get_response_json
+from curl2swift.processing.prepare_enum_cases import prepare_enum_cases
 from urllib.parse import urlparse
 import sys
-
-import pyp3rclip
+import subprocess
 
 from curl2swift.utils.logger import logging
 from curl2swift.parsing.parse_context import parse_context
@@ -15,7 +17,10 @@ ParsedContent = namedtuple('ParsedContent', ('\
     query_params,\
     headers,\
     param_names,\
-    path_param_rows'\
+    path_param_rows,\
+    response_json,\
+    header_rows,\
+    body_param_rows'
 ))
 
 def get_curl():
@@ -28,7 +33,8 @@ def get_curl():
     else:
         logging.info('--curl option not used')
         logging.info('Reading curl from clipboard')
-        curl = pyp3rclip.paste()
+        curl = subprocess.Popen(['pbpaste']).communicate()[0]
+        curl = curl if curl else ''
 
     curl = curl.replace('--location', '')
     curl = curl.replace('-v', '')
@@ -50,7 +56,7 @@ def get_parameter_names(context):
         return [param.split('=') for param in context.data_urlencode]
     return []
 
-def parse_curl(parser):
+def get_request_content(parser):
     curl = get_curl()
 
     TEST_CURL = "curl -i https://api.github.com/users/defunkt"
@@ -84,6 +90,22 @@ def parse_curl(parser):
     logging.info('Found headers: ' + str(headers))
     logging.info('Found body params: ' + str(param_names))
 
-    content = ParsedContent(url, method, path, query_params, headers, param_names, path_param_rows)
+    request_code = create_request(context)
+    response_json = get_response_json(request_code)
+    header_rows = prepare_enum_cases(list(headers.keys()), 'header')
+    body_param_rows = prepare_enum_cases(param_names, 'param')
+
+    content = ParsedContent(
+        url, 
+        method, 
+        path, 
+        query_params, 
+        headers, 
+        param_names, 
+        path_param_rows, 
+        response_json, 
+        header_rows, 
+        body_param_rows
+    )
     logging.info("Content parsed.")
-    return curl, content
+    return content

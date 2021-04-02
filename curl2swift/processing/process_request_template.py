@@ -12,7 +12,7 @@ from curl2swift.constants import TWO_LEVEL_INDENT_SEP
 
 
 def process_request_template(
-    request_name, description, content: ParsedContent, header_rows, body_param_rows, response_model
+    request_name, description, content: ParsedContent, response_model
 ):
     logging.info('Processing request template')
     processed_template = REQUEST_TEMPLATE
@@ -22,9 +22,9 @@ def process_request_template(
     processed_template = processed_template.replace('<METHOD>', '.' + content.method.lower())
 
     processed_template = processed_template\
-        .replace('<HEADERS>', TWO_LEVEL_INDENT_SEP.join(header_rows))
+        .replace('<HEADERS>', TWO_LEVEL_INDENT_SEP.join(content.header_rows))
     processed_template = processed_template\
-        .replace('<BODY_PARAMS>', TWO_LEVEL_INDENT_SEP.join(body_param_rows))
+        .replace('<BODY_PARAMS>', TWO_LEVEL_INDENT_SEP.join(content.body_param_rows))
 
     processed_template = process_query_params(content.query_params, processed_template)
 
@@ -46,7 +46,7 @@ def process_request_template(
         processed_template = re.sub(r'\n\s*enum Header: String \{\n\s*\}', '', processed_template)
         processed_template = re.sub(r'\n\s*<HEADER_PARAM_SETTER>', '', processed_template)
 
-    if body_param_rows:
+    if content.body_param_rows:
         processed_template = processed_template\
             .replace('<BODY_PARAM_SETTER>', BODY_PARAM_SETTER)
     else:

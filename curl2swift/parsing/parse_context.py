@@ -3,7 +3,7 @@ from http import cookies
 import re
 import shlex
 
-ParsedContext = namedtuple('ParsedContext', [
+RequestProperties = namedtuple('RequestProperties', [
     'method', 'url', 'data', 'data_urlencode', 'headers', 'cookies', 'verify', 'auth'
 ])
 
@@ -44,7 +44,7 @@ def parse_context(curl_command, parser):
     if parsed_args.user:
         user = tuple(user.split(':'))
 
-    return ParsedContext(
+    return RequestProperties(
         method=method,
         url=parsed_args.url,
         data=post_data,
