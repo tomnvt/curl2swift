@@ -10,7 +10,7 @@ jobs:
       - checkout
       - python/install-deps
       - run:
-          command: pytest curl2swift/tests
+          command: pytest tests
           name: Test
 
   # TODO: Separate common steps
@@ -57,9 +57,22 @@ jobs:
 
 workflows:
   version: 2
+  build_and_test:
+    jobs:
+      - build:
+          filters:
+            branches:
+              ignore: 
+                - stage
+                - master
   build_and_deploy:
     jobs:
-      - build
+      - build:
+          filters:
+            branches:
+              only: 
+                - stage
+                - master
       - deploy_stage:
           requires:
             - build
