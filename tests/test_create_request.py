@@ -1,4 +1,4 @@
-from curl2swift.tests.test_request import TEST_REQUEST
+from tests.test_request import TEST_REQUEST
 from curl2swift.parsing.get_parser import get_curl_parser
 from curl2swift.processing.create_request import create_request
 
