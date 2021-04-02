@@ -10,8 +10,11 @@ jobs:
       - checkout
       - python/install-deps
       - run:
-          command: pytest tests
           name: Test
+          command: |
+            sudo apt-get install xsel
+            sudo apt-get install xclip
+            pytest tests
 
   # TODO: Separate common steps
   deploy_stage:
@@ -24,7 +27,7 @@ jobs:
             python setup.py sdist
             python setup.py bdist_wheel      
       - run:
-          name: Upload to text PyPI
+          name: Upload to test PyPI
           command: |
             pip install --upgrade twine
             twine upload -u $TEST_PYPI_USERNAME -p $TEST_PYPI_PASSWORD --repository testpypi dist/*
@@ -35,14 +38,8 @@ jobs:
       - checkout
       - python/install-deps
       - run:
-          command: pytest curl2swift/tests
+          command: pytest tests
           name: Test
-      - run:
-          name: Verify git tag vs. version
-          command: |
-            python3 -m venv venv
-            . venv/bin/activate
-            python setup.py verify
       - run:
           name: Create packages
           command: |
