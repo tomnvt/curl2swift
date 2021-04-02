@@ -25,11 +25,11 @@ def get_curl():
         index = sys.argv.index('--curl')
         curl = sys.argv[index + 1]
         logging.info('Got cURL from option: ' + curl)
-        return curl
-    logging.info('--curl option not used')
+    else:
+        logging.info('--curl option not used')
+        logging.info('Reading curl from clipboard')
+        curl = pyp3rclip.paste()
 
-    logging.info('Reading curl from clipboard')
-    curl = pyp3rclip.paste()
     curl = curl.replace('--location', '')
     curl = curl.replace('-v', '')
     curl = curl.replace('--request', '-X')
@@ -50,9 +50,8 @@ def get_parameter_names(context):
         return [param.split('=') for param in context.data_urlencode]
     return []
 
-def parse_curl(parser, curl=None):
-    if not curl:
-        curl = get_curl()
+def parse_curl(parser):
+    curl = get_curl()
 
     TEST_CURL = "curl -i https://api.github.com/users/defunkt"
     try:
