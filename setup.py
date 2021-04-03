@@ -12,7 +12,7 @@ HERE = pathlib.Path(__file__).parent
 README = (HERE / "README.md").read_text()
 
 # circleci.py version
-VERSION = "0.3.3"
+VERSION = "0.3.4"
 
 class VerifyVersionCommand(install):
     """Custom command to verify that the git tag matches our version"""
