@@ -12,7 +12,7 @@ HERE = pathlib.Path(__file__).parent
 README = (HERE / "README.md").read_text()
 
 # circleci.py version
-VERSION = "0.3.3"
+VERSION = "0.3.1"
 
 class VerifyVersionCommand(install):
     """Custom command to verify that the git tag matches our version"""
@@ -44,7 +44,7 @@ setup(
     ],
     packages=find_packages(include=["curl2swift", "curl2swift.*"]),
     include_package_data=True,
-    install_requires=["Pygments", "requests", "gitpython"],
+    install_requires=["Pygments", "requests", "pyperclip", "gitpython"],
     entry_points={
         "console_scripts": [
             "curl2swift=curl2swift.__main__:main",

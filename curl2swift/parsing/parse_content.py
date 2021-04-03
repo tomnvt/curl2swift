@@ -5,7 +5,8 @@ from curl2swift.processing.get_response_json import get_response_json
 from curl2swift.processing.prepare_enum_cases import prepare_enum_cases
 from urllib.parse import urlparse
 import sys
-import subprocess
+
+import clipboard
 
 from curl2swift.utils.logger import logging
 from curl2swift.parsing.parse_context import parse_context
@@ -33,8 +34,7 @@ def get_curl():
     else:
         logging.info('--curl option not used')
         logging.info('Reading curl from clipboard')
-        curl = subprocess.Popen(['pbpaste']).communicate()[0]
-        curl = curl if curl else ''
+        curl = clipboard.paste()
 
     curl = curl.replace('--location', '')
     curl = curl.replace('-v', '')
