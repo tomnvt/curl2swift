@@ -9,7 +9,7 @@ import sys
 import clipboard
 
 from curl2swift.utils.logger import logging
-from curl2swift.parsing.parse_context import parse_context
+from curl2swift.parsing.get_request_properties import get_request_properties
 
 ParsedContent = namedtuple('ParsedContent', ('\
     url,\
@@ -62,12 +62,12 @@ def get_request_content(parser):
     TEST_CURL = "curl -i https://api.github.com/users/defunkt"
     try:
         logging.info('Parsing cURL')
-        context = parse_context(curl, parser)
+        context = get_request_properties(curl, parser)
     except:
         logging.error('Parsing failed (see usage above)')
         logging.info('Falling back to test cURL')
         curl = TEST_CURL
-        context = parse_context(TEST_CURL, parser)
+        context = get_request_properties(TEST_CURL, parser)
 
     logging.info('Transforming cURL to Python request object')
     path_param_rows = [] # NOTE: path params are not yet supported
