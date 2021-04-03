@@ -5,8 +5,7 @@ from curl2swift.processing.get_response_json import get_response_json
 from curl2swift.processing.prepare_enum_cases import prepare_enum_cases
 from urllib.parse import urlparse
 import sys
-
-import clipboard
+import subprocess
 
 from curl2swift.utils.logger import logging
 from curl2swift.parsing.get_request_properties import get_request_properties
@@ -34,7 +33,8 @@ def get_curl():
     else:
         logging.info('--curl option not used')
         logging.info('Reading curl from clipboard')
-        curl = clipboard.paste()
+        curl = subprocess.check_output(['pbpaste', 'r'], 
+            stdin=subprocess.PIPE, close_fds=True).decode('utf-8')
 
     curl = curl.replace('--location', '')
     curl = curl.replace('-v', '')
@@ -96,15 +96,15 @@ def get_request_content(parser):
     body_param_rows = prepare_enum_cases(param_names, 'param')
 
     content = ParsedContent(
-        url, 
-        method, 
-        path, 
-        query_params, 
-        headers, 
-        param_names, 
-        path_param_rows, 
-        response_json, 
-        header_rows, 
+        url,
+        method,
+        path,
+        query_params,
+        headers,
+        param_names,
+        path_param_rows,
+        response_json,
+        header_rows,
         body_param_rows
     )
     logging.info("Content parsed.")

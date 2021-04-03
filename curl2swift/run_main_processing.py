@@ -1,6 +1,7 @@
 from curl2swift.parsing.get_parser import get_curl_parser
 from curl2swift.parsing.parse_content import get_request_content
-from curl2swift.parsing.get_request_name_and_description import get_request_name_and_description
+from curl2swift.parsing.get_request_name_and_description \
+    import get_request_name_and_description
 
 from curl2swift.processing.create_request import create_request
 from curl2swift.processing.get_response_json import get_response_json
