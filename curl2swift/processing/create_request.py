@@ -1,5 +1,5 @@
 from curl2swift.utils.dict_to_pretty_string import dict_to_pretty_string
-from curl2swift.parsing.parse_context import parse_context
+from curl2swift.parsing.get_request_properties import get_request_properties
 
 
 BASE_INDENT = " " * 4

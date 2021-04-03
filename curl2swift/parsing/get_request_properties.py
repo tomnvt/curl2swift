@@ -8,7 +8,7 @@ RequestProperties = namedtuple('RequestProperties', [
 ])
 
 
-def parse_context(curl_command, parser):
+def get_request_properties(curl_command, parser):
     method = "get"
 
     tokens = shlex.split(curl_command)

@@ -56,7 +56,12 @@ workflows:
   version: 2
   build_and_test:
     jobs:
-      - build
+      - build:
+          filters:
+            branches:
+              ignore:
+                - master
+                - stage
   build_and_deploy:
     jobs:
       - build:
