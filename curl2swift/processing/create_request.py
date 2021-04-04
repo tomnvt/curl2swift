@@ -1,5 +1,4 @@
 from curl2swift.utils.dict_to_pretty_string import dict_to_pretty_string
-from curl2swift.parsing.get_request_properties import get_request_properties
 
 
 BASE_INDENT = " " * 4
@@ -19,16 +18,16 @@ def create_request(parsed_context):
     if parsed_context.verify:
         verify_token = '\n{}verify=False'.format(BASE_INDENT)
 
-    auth_data = "{}auth={}".format(BASE_INDENT,parsed_context.auth)
+    auth_data = "{}auth={}".format(BASE_INDENT, parsed_context.auth)
+    headers = dict_to_pretty_string(parsed_context.headers)
+    cookies = dict_to_pretty_string(parsed_context.cookies)
 
     formatter = {
         'method': parsed_context.method,
         'url': parsed_context.url,
         'data_token': data_token,
-        'headers_token': "{}headers={}"\
-            .format(BASE_INDENT, dict_to_pretty_string(parsed_context.headers)),
-        'cookies_token': "{}cookies={}"\
-            .format(BASE_INDENT, dict_to_pretty_string(parsed_context.cookies)),
+        'headers_token': "{}headers={}".format(BASE_INDENT, headers),
+        'cookies_token': "{}cookies={}".format(BASE_INDENT, cookies),
         'security_token': verify_token,
         'auth': auth_data
     }

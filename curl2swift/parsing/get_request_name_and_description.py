@@ -16,5 +16,5 @@ def get_request_name_and_description():
     except IndexError:
         logging.warning('Request description missing.')
         description = 'Add description'
-    
+
     return request_name, description

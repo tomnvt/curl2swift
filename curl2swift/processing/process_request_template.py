@@ -1,8 +1,8 @@
-
-from curl2swift.processing.request_template.process_query_params import process_query_params
 import subprocess
 import re
 
+from curl2swift.processing.request_template.process_query_params \
+    import process_query_params
 from curl2swift.parsing.parse_content import ParsedContent
 from curl2swift.templates.request_templates import REQUEST_TEMPLATE,\
      PATH_PARAM_SETTER, HEADER_PARAM_SETTER, BODY_PARAM_SETTER

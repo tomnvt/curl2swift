@@ -1,7 +1,8 @@
 # pylint: disable=unused-import, exec-used, invalid-name
-import requests
+import requests  # noqa: F401
 
 _response_json = ''
+
 
 def get_response_json(request_code):
     exec('global _response_json\n_response_json = (' + request_code + '.json())')

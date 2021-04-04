@@ -5,6 +5,26 @@ import webbrowser
 
 from curl2swift.utils.clone_repo import clone_repo
 
+
+def open_create_issue_page():
+    webbrowser.open('https://github.com/tomnvt/curl2swift/issues/new')
+
+
+def clone_example_project():
+    clone_repo('https://github.com/tomnvt/curl2swift-example.git', 'example project')
+    subprocess.Popen(['open', 'curl2swift-example', '-a', 'Xcode'])
+
+
+def clone_boilerplate_code():
+    clone_repo('https://github.com/tomnvt/curl2swift-boilerplate.git', 'boilerplate code')
+
+
+option_handlers = {
+    **dict.fromkeys(["-i", '--issue'], open_create_issue_page),
+    **dict.fromkeys(["-e", "--example"], clone_example_project),
+    **dict.fromkeys(["-b", "--boilerplate"], clone_boilerplate_code)
+}
+
 def handle_options():
     options, arguments = getopt.getopt(
         sys.argv[1:],
@@ -13,15 +33,7 @@ def handle_options():
     )
 
     for opt, value in options:
-        if opt in ["-i", '--issue']:
-            webbrowser.open('https://github.com/tomnvt/curl2swift/issues/new')
+        option_handler = option_handlers.get(opt)
+        if option_handler:
+            option_handler()
             sys.exit(0)
-        if opt in ["-e", "--example"]:
-            clone_repo('https://github.com/tomnvt/curl2swift-example.git', 'example project')
-            subprocess.Popen(['open', 'curl2swift-example', '-a', 'Xcode'])
-            sys.exit(0)
-        if opt in ["-b", "--boilerplate"]:
-            clone_repo('https://github.com/tomnvt/curl2swift-boilerplate.git', 'boilerplate code')
-            sys.exit(0)
-        if opt in ["-c", "--curl"]:
-            return {'curl': value}

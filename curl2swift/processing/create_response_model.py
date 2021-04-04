@@ -6,7 +6,7 @@ submodels = []
 DEFAULT_MODEL_NAME = 'Response'
 
 
-def get_value_type_in_swift(key, value, is_in_list = False):
+def get_value_type_in_swift(key, value, is_in_list=False):
     if isinstance(value, str):
         return 'String'
     elif isinstance(value, bool):
@@ -29,7 +29,6 @@ def get_value_type_in_swift(key, value, is_in_list = False):
         return 'String'
 
 
-
 def add_submodel(model_dict, model_name):
     logging.info("Submodel found: " + model_name)
     if model_dict:
@@ -38,6 +37,7 @@ def add_submodel(model_dict, model_name):
         logging.warning("Found empty dictionary in key " + model_name +
                         '. This key will be ignored.')
         return
+
 
 def create_response_model(response_json, model_name='Response'):
     global submodels

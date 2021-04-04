@@ -1,4 +1,4 @@
-from tests.test_request import TEST_REQUEST
+from tests.constants import TEST_REQUEST
 from curl2swift.processing.get_response_json import get_response_json
 
 

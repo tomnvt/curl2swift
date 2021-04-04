@@ -10,22 +10,23 @@ import subprocess
 from curl2swift.utils.logger import logging
 from curl2swift.parsing.get_request_properties import get_request_properties
 
-ParsedContent = namedtuple('ParsedContent', ('\
-    url,\
-    method, \
-    path,\
-    query_params,\
-    headers,\
-    param_names,\
-    path_param_rows,\
-    response_json,\
-    header_rows,\
-    body_param_rows'
-))
+ParsedContent = namedtuple('ParsedContent', [
+    'url',
+    'method',
+    'path',
+    'query_params',
+    'headers',
+    'param_names',
+    'path_param_rows',
+    'response_json',
+    'header_rows',
+    'body_param_rows'
+])
+
 
 def get_curl():
     logging.info('Reading curl from --curl option')
-    arguments = ' '.join(sys.argv)
+
     if '--curl' in sys.argv:
         index = sys.argv.index('--curl')
         curl = sys.argv[index + 1]
@@ -33,8 +34,13 @@ def get_curl():
     else:
         logging.info('--curl option not used')
         logging.info('Reading curl from clipboard')
-        curl = subprocess.check_output(['pbpaste', 'r'], 
-            stdin=subprocess.PIPE, close_fds=True).decode('utf-8')
+        curl = subprocess\
+            .check_output(
+                ['pbpaste', 'r'],
+                stdin=subprocess.PIPE,
+                close_fds=True
+            )\
+            .decode('utf-8')
 
     curl = curl.replace('--location', '')
     curl = curl.replace('-v', '')
@@ -44,44 +50,48 @@ def get_curl():
     return curl
 
 
-def get_parameter_names(context):
-    if context.data:
-        data = context.data
+def get_parameter_names(request_properties):
+    if request_properties.data:
+        data = request_properties.data
         if '{' in data:
             data = literal_eval(data)
             return [[param, data[param]] for param in data]
         else:
-            return [param.split('=') for param in data.replace(';', '&').split('&')]
-    elif context.data_urlencode:
-        return [param.split('=') for param in context.data_urlencode]
+            data_with_ampersands = data.replace(';', '&').split('&')
+            return [param.split('=') for param in data_with_ampersands]
+    elif request_properties.data_urlencode:
+        return [param.split('=') for param in request_properties.data_urlencode]
     return []
+
 
 def get_request_content(parser):
     curl = get_curl()
 
-    TEST_CURL = "curl -i https://api.github.com/users/defunkt"
+    test_curl = "curl -i https://api.github.com/users/defunkt"
     try:
         logging.info('Parsing cURL')
-        context = get_request_properties(curl, parser)
-    except:
+        request_properties = get_request_properties(curl, parser)
+    except:  # noqa: E722
         logging.error('Parsing failed (see usage above)')
         logging.info('Falling back to test cURL')
-        curl = TEST_CURL
-        context = get_request_properties(TEST_CURL, parser)
+        curl = test_curl
+        request_properties = get_request_properties(test_curl, parser)
 
     logging.info('Transforming cURL to Python request object')
-    path_param_rows = [] # NOTE: path params are not yet supported
+    path_param_rows = []  # NOTE: path params are not yet supported
     param_names = []
-    method = context.method
-    parsed_url = urlparse(context.url)
+    method = request_properties.method
+    parsed_url = urlparse(request_properties.url)
 
-    param_names = get_parameter_names(context)
-    headers = context.headers
+    param_names = get_parameter_names(request_properties)
+    headers = request_properties.headers
     url = parsed_url.scheme + '://' + parsed_url.netloc
     path = parsed_url.path
-    query_params = {param.split('=')[0]: param.split('=')[1]\
-        for param in parsed_url.query.split('&')} \
-        if parsed_url.query else None
+    if parsed_url.query:
+        query_params = {param.split('=')[0]: param.split('=')[1]
+                        for param in parsed_url.query.split('&')}
+    else:
+        query_params = None
 
     logging.info('URL: ' + url)
     logging.info('Found method: ' + method)
@@ -90,7 +100,7 @@ def get_request_content(parser):
     logging.info('Found headers: ' + str(headers))
     logging.info('Found body params: ' + str(param_names))
 
-    request_code = create_request(context)
+    request_code = create_request(request_properties)
     response_json = get_response_json(request_code)
     header_rows = prepare_enum_cases(list(headers.keys()), 'header')
     body_param_rows = prepare_enum_cases(param_names, 'param')

@@ -4,7 +4,14 @@ import re
 import shlex
 
 RequestProperties = namedtuple('RequestProperties', [
-    'method', 'url', 'data', 'data_urlencode', 'headers', 'cookies', 'verify', 'auth'
+    'method',
+    'url',
+    'data',
+    'data_urlencode',
+    'headers',
+    'cookies',
+    'verify',
+    'auth'
 ])
 
 
@@ -29,7 +36,8 @@ def get_request_properties(curl_command, parser):
     for curl_header in parsed_args.header:
         if curl_header.startswith(':'):
             occurrence = [m.start() for m in re.finditer(':', curl_header)]
-            header_key, header_value = curl_header[:occurrence[1]], curl_header[occurrence[1] + 1:]
+            header_key, header_value \
+                = curl_header[:occurrence[1]], curl_header[occurrence[1] + 1:]
         else:
             header_key, header_value = curl_header.split(":", 1)
 

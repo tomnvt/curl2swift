@@ -28,4 +28,3 @@ def process_query_params(query_params, processed_template):
             .sub(r'\n\s*<QUERY_PARAM_SETTER>', '', processed_template)
 
     return processed_template
-
