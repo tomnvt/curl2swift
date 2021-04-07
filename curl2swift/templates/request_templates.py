@@ -6,24 +6,21 @@ QUERY_PARAM_SETTER = """
     }
 """
 
-PATH_PARAM_SETTER = \
-    """@discardableResult
+PATH_PARAM_SETTER = """@discardableResult
     func setPathParameter(_ param: PathParameter, _ value: String) -> Self {
         let placeholder = "{" + param.rawValue + "}"
         path = path.replacingOccurrences(of: placeholder, with: value)
         return self
     }"""
 
-HEADER_PARAM_SETTER = \
-    """@discardableResult
+HEADER_PARAM_SETTER = """@discardableResult
     func setHeader(_ key: Header, _ value: String) -> Self {
         headers[key.rawValue] = value
         return self
     }
     """
 
-BODY_PARAM_SETTER = \
-    """@discardableResult
+BODY_PARAM_SETTER = """@discardableResult
     func setBodyParameter(_ key: BodyParameter, _ value: String) -> Self {
         params[key.rawValue] = value
         return self

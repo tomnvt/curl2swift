@@ -7,9 +7,6 @@ def dict_to_pretty_string(the_dict, indent=4):
 
     return ("\n" + " " * indent).join(
         json.dumps(
-            the_dict,
-            sort_keys=True,
-            indent=indent,
-            separators=(',', ': ')
-        )
-        .splitlines())
+            the_dict, sort_keys=True, indent=indent, separators=(",", ": ")
+        ).splitlines()
+    )
