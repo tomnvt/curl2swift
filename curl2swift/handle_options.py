@@ -11,9 +11,7 @@ def open_create_issue_page():
 
 
 def clone_example_project():
-    clone_repo(
-        "https://github.com/tomnvt/curl2swift-example.git", "example project"
-    )
+    clone_repo("https://github.com/tomnvt/curl2swift-example.git", "example project")
     subprocess.Popen(["open", "curl2swift-example", "-a", "Xcode"])
 
 
@@ -33,7 +31,7 @@ option_handlers = {
 
 def handle_options():
     options, _ = getopt.getopt(
-        sys.argv[1:], "ieb", ["issue", "example", "boilerplate", "curl="]
+        sys.argv[1:], "iebw", ["issue", "example", "boilerplate", "windowed", "curl="]
     )
 
     for opt, _ in options:

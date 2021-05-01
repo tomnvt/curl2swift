@@ -14,18 +14,21 @@ README = (HERE / "README.md").read_text()
 # circleci.py version
 VERSION = "0.3.5"
 
+
 class VerifyVersionCommand(install):
     """Custom command to verify that the git tag matches our version"""
-    description = 'verify that the git tag matches our version'
+
+    description = "verify that the git tag matches our version"
 
     def run(self):
-        tag = os.getenv('CIRCLE_TAG')
+        tag = os.getenv("CIRCLE_TAG")
 
         if tag != VERSION:
             info = "Git tag: {0} does not match the version of this app: {1}".format(
                 tag, VERSION
             )
             sys.exit(info)
+
 
 setup(
     name="curl2swift",
@@ -49,8 +52,8 @@ setup(
         "console_scripts": [
             "curl2swift=curl2swift.__main__:main",
         ]
-    },    
+    },
     cmdclass={
-        'verify': VerifyVersionCommand,
-    }
+        "verify": VerifyVersionCommand,
+    },
 )

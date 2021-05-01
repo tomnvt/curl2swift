@@ -17,8 +17,6 @@ def get_curl_parser():
     parser.add_argument("--user", "-u", default=())
     parser.add_argument("-i", "--include", action="store_true")
     parser.add_argument("-s", "--silent", action="store_true")
-    parser.add_argument("--location", default=None)
-    parser.add_argument("--request", default=None)
     parser.add_argument("-v", default=None)
 
     return parser

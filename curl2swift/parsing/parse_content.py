@@ -20,32 +20,37 @@ ParsedContent = namedtuple(
         "headers",
         "param_names",
         "path_param_rows",
-        "response_json",
         "header_rows",
         "body_param_rows",
     ],
 )
 
 
-def get_curl():
+def get_curl(curl=None):
     logging.info("Reading curl from --curl option")
 
-    if "--curl" in sys.argv:
+    if curl:
+        pass
+    elif "--curl" in sys.argv:
         index = sys.argv.index("--curl")
         curl = sys.argv[index + 1]
         logging.info("Got cURL from option: " + curl)
     else:
         logging.info("--curl option not used")
         logging.info("Reading curl from clipboard")
-        curl = subprocess.check_output(
-            ["pbpaste", "r"], stdin=subprocess.PIPE
-        ).decode("utf-8")
+        curl = subprocess.check_output(["pbpaste", "r"], stdin=subprocess.PIPE).decode(
+            "utf-8"
+        )
 
-    curl = curl.replace("--location", "")
+    if " POST " in curl and "-X POST" not in curl:
+        curl = curl.replace("POST", "-X POST", 1)
+    if "GET" in curl and "-X GET" not in curl:
+        curl = curl.replace("GET", "-X GET", 1)
+
     curl = curl.replace("-v", "")
-    curl = curl.replace("--request", "-X")
     curl = curl.replace("\\\n", "")
     logging.info("cURL after cleanup: " + curl)
+
     return curl
 
 
@@ -59,14 +64,12 @@ def get_parameter_names(request_properties):
             data_with_ampersands = data.replace(";", "&").split("&")
             return [param.split("=") for param in data_with_ampersands]
     elif request_properties.data_urlencode:
-        return [
-            param.split("=") for param in request_properties.data_urlencode
-        ]
+        return [param.split("=") for param in request_properties.data_urlencode]
     return []
 
 
-def get_request_content(parser):
-    curl = get_curl()
+def get_request_content(parser, curl, make_request=False):
+    curl = get_curl(curl)
 
     test_curl = "curl -i https://api.github.com/users/defunkt"
     try:
@@ -92,6 +95,7 @@ def get_request_content(parser):
         query_params = {
             param.split("=")[0]: param.split("=")[1]
             for param in parsed_url.query.split("&")
+            if "=" in param and param[-1] != "="
         }
     else:
         query_params = None
@@ -104,7 +108,14 @@ def get_request_content(parser):
     logging.info("Found body params: " + str(param_names))
 
     request_code = create_request(request_properties)
-    response_json = get_response_json(request_code)
+    if make_request:
+        # TODO: Add request validation
+        try:
+            response_json = get_response_json(request_code)
+        except:
+            response_json = {"Getting response JSON failed": ""}
+    else:
+        response_json = {}
     header_rows = prepare_enum_cases(list(headers.keys()), "header")
     body_param_rows = prepare_enum_cases(param_names, "param")
 
@@ -116,9 +127,8 @@ def get_request_content(parser):
         headers,
         param_names,
         path_param_rows,
-        response_json,
         header_rows,
         body_param_rows,
     )
     logging.info("Content parsed.")
-    return content
+    return content, response_json

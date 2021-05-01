@@ -22,7 +22,7 @@ def get_request_properties(curl_command, parser):
     method = "get"
 
     tokens = shlex.split(curl_command)
-    parsed_args = parser.parse_args(tokens)
+    parsed_args, _ = parser.parse_known_args(tokens)
     post_data = parsed_args.data or parsed_args.data_binary
 
     if post_data:
@@ -41,7 +41,7 @@ def get_request_properties(curl_command, parser):
             occurrence = [m.start() for m in re.finditer(":", curl_header)]
             header_key, header_value = (
                 curl_header[: occurrence[1]],
-                curl_header[occurrence[1] + 1:],
+                curl_header[occurrence[1] + 1 :],
             )
         else:
             header_key, header_value = curl_header.split(":", 1)

@@ -76,6 +76,7 @@ EXPECTED_RESULT = """
     }
 """
 
+
 def test_create_response_model():
     json_dict = literal_eval(RESPONSE_JSON)
     response_model = create_response_model(json_dict)

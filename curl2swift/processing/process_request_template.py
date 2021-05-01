@@ -21,9 +21,7 @@ def process_request_template(
 ):
     logging.info("Processing request template")
     processed_template = REQUEST_TEMPLATE
-    processed_template = processed_template.replace(
-        "<REQUEST_NAME>", request_name
-    )
+    processed_template = processed_template.replace("<REQUEST_NAME>", request_name)
     processed_template = processed_template.replace("<DESC>", description)
     processed_template = processed_template.replace("<PATH>", content.path)
     processed_template = processed_template.replace(
@@ -37,9 +35,7 @@ def process_request_template(
         "<BODY_PARAMS>", TWO_LEVEL_INDENT_SEP.join(content.body_param_rows)
     )
 
-    processed_template = process_query_params(
-        content.query_params, processed_template
-    )
+    processed_template = process_query_params(content.query_params, processed_template)
 
     processed_template = processed_template.replace(
         "<PATH_PARAMS>", TWO_LEVEL_INDENT_SEP.join(content.path_param_rows)
@@ -54,9 +50,7 @@ def process_request_template(
             "",
             processed_template,
         )
-        processed_template = re.sub(
-            r"\n\s*<PATH_PARAM_SETTER>", "", processed_template
-        )
+        processed_template = re.sub(r"\n\s*<PATH_PARAM_SETTER>", "", processed_template)
 
     if content.headers:
         processed_template = processed_template.replace(
@@ -80,25 +74,17 @@ def process_request_template(
             "",
             processed_template,
         )
-        processed_template = re.sub(
-            r"\n\s*<BODY_PARAM_SETTER>", "", processed_template
-        )
+        processed_template = re.sub(r"\n\s*<BODY_PARAM_SETTER>", "", processed_template)
 
-    processed_template = processed_template.replace(
-        "<RESPONSE>", response_model
-    )
+    processed_template = processed_template.replace("<RESPONSE>", response_model)
 
-    print("\n" + "- " * 9)
-    print("GENERATED REQUEST:")
-    print("" + "- " * 9 + "\n")
-    pprint_color(processed_template)
-    print("\n" + "- " * 12)
-    print("END OF GENERATED OUTPUT")
-    print("" + "- " * 12 + "\n")
+    # TODO: Move to presentation layer
+    # print("\n" + "- " * 9)
+    # print("GENERATED REQUEST:")
+    # print("" + "- " * 9 + "\n")
+    # pprint_color(processed_template)
+    # print("\n" + "- " * 12)
+    # print("END OF GENERATED OUTPUT")
+    # print("" + "- " * 12 + "\n")
 
-    should_copy = input("Copy output to clipboard? [y/n]\n")
-
-    if should_copy == "y":
-        subprocess.run(
-            "pbcopy", universal_newlines=True, input=processed_template
-        )
+    return processed_template

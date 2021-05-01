@@ -8,6 +8,8 @@ CURL = """curl -i https://api.github.com/users/defunkt"""
 
 def test_create_request():
     parser = get_curl_parser()
-    context = RequestProperties('get', 'https://api.github.com/users/defunkt', None, None, None, None, None, ())
+    context = RequestProperties(
+        "get", "https://api.github.com/users/defunkt", None, None, None, None, None, ()
+    )
     request = create_request(context)
     assert request == TEST_REQUEST.strip()
