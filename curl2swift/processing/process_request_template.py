@@ -17,7 +17,7 @@ from curl2swift.constants import TWO_LEVEL_INDENT_SEP
 
 
 def process_request_template(
-    request_name, description, content: ParsedContent, response_model
+    request_name, description, content: ParsedContent, response_model, dynamic_values
 ):
     logging.info("Processing request template")
     processed_template = REQUEST_TEMPLATE

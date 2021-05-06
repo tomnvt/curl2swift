@@ -31,11 +31,11 @@ def parse_inputs(user_input, should_make_request=False):
 
 
 def process_inputs(
-    request_name, description, request_content, response_json, is_windowed
+    request_name, description, request_content, response_json, is_windowed, dynamic_values={}
 ):
     response_model = create_response_model(response_json)
     request = process_request_template(
-        request_name, description, request_content, response_model
+        request_name, description, request_content, response_model, dynamic_values
     )
 
     if not is_windowed:
@@ -44,7 +44,7 @@ def process_inputs(
         if should_copy == "y":
             SubprocessError.run("pbcopy", universal_newlines=True, input=request)
 
-    unit_test = process_test_template(request_name, request_content)
+    unit_test = process_test_template(request_name, request_content, dynamic_values)
 
     if not is_windowed:
         should_copy = input("Copy output to clipboard? [y/n]\n")
@@ -55,10 +55,10 @@ def process_inputs(
     return request, unit_test
 
 
-def run_main_process(user_input, is_windowed=False, should_make_request=False):
+def run_main_process(user_input, is_windowed=False, should_make_request=False, dynamic_values={}):
     request_name, description, request_content, response_json = parse_inputs(
         user_input, should_make_request
     )
     return process_inputs(
-        request_name, description, request_content, response_json, is_windowed
+        request_name, description, request_content, response_json, is_windowed, dynamic_values
     )

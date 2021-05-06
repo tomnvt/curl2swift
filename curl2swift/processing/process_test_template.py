@@ -6,10 +6,12 @@ from curl2swift.templates.test_template import TEST_TEMPLATE
 from curl2swift.utils.pprint_color import pprint_color
 
 
-def process_test_template(request_name, content):
+def process_test_template(request_name, content, dynamic_values):
     logging.info("Processing unit test templacte")
     header_setters = []
     for index, header in enumerate(content.headers):
+        if dynamic_values and header not in dynamic_values['HEADER']:
+            continue
         value = content.headers[header]
         enum_case = re.findall("case (.*) =", content.header_rows[index])[0]
         header_setters.append(".setHeader(." + enum_case + ', "' + value + '")')
@@ -25,9 +27,14 @@ def process_test_template(request_name, content):
 
     processed_template = TEST_TEMPLATE
     if content.headers:
-        processed_template = processed_template.replace(
-            "<HEADER_SETTERS>", "\n            ".join(header_setters)
-        )
+        if header_setters:
+            processed_template = processed_template.replace(
+                "<HEADER_SETTERS>", "\n            ".join(header_setters)
+            )
+        else:
+            processed_template = processed_template.replace(
+                "<HEADER_SETTERS>\n            ", ""
+            )
     else:
         processed_template = re.sub(".+HEADER_SETTERS>\n", "", processed_template)
 
