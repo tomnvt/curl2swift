@@ -11,5 +11,5 @@ def test_create_request():
     context = RequestProperties(
         "get", "https://api.github.com/users/defunkt", None, None, None, None, None, ()
     )
-    request = create_request(context)
+    request = create_request(context, [])
     assert request == TEST_REQUEST.strip()

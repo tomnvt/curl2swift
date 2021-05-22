@@ -4,6 +4,8 @@ TEST_TEMPLATE = """
         <REQUEST_NAME>Request()
             .set(.baseURL("<URL>"))
             .set(.path("<PATH>"))
+            <QUERY_PARAM_SETTERS>
+            <PATH_PARAM_SETTERS>
             <HEADER_SETTERS>
             <BODY_PARAM_SETTERS>
             .makeRxRequest()

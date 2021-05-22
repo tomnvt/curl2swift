@@ -5,7 +5,7 @@ from curl2swift.templates.request_templates import QUERY_PARAM_SETTER
 from curl2swift.constants import TWO_LEVEL_INDENT_SEP
 
 
-def process_query_params(query_params, processed_template):
+def process_query_params(query_params, processed_template, dynamic_values):
     logging.info("Processing query params: " + str(query_params))
     if query_params:
         processed_template = processed_template.replace(
@@ -17,9 +17,10 @@ def process_query_params(query_params, processed_template):
         )
         query_params_dict_entries = []
         for query_param_key in query_params:
-            query_params_dict_entries.append(
-                '"' + query_param_key + '": "' + query_params[query_param_key] + '"'
-            )
+            if query_param_key not in dynamic_values["QUERY PARAM"]:
+                query_params_dict_entries.append(
+                    '"' + query_param_key + '": "' + query_params[query_param_key] + '"'
+                )
         query_param_init_row = (
             "set(.queryParams([" + ", ".join(query_params_dict_entries) + "]))"
         )

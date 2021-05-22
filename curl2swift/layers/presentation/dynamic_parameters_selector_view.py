@@ -1,8 +1,13 @@
-
-from curl2swift.layers.presentation.content_presenter import WindowViewModel
+from PyQt5 import QtCore
+from curl2swift.layers.presentation.content_presenter import (
+    ContentPresenter,
+    ViewModel,
+)
 from PyQt5.QtWidgets import (
     QCheckBox,
+    QFormLayout,
     QLabel,
+    QLineEdit,
     QVBoxLayout,
     QWidget,
 )
@@ -10,60 +15,107 @@ from PyQt5.QtWidgets import (
 
 class DynamicParamsSelectorView(QWidget):
 
-    _selected = set()
+    """ Properties """
 
-    def __init__(self, presenter):
+    _selected = set()
+    _path_param_lines = []
+    _check_boxes = []
+
+    """ Init """
+
+    def __init__(self, presenter: ContentPresenter):
         super().__init__()
         self.presenter = presenter
         self.box_layout = QVBoxLayout()
         self.info_label = QWidget()
         self.info_layout = QVBoxLayout()
+        self.path_param_values_label = QLabel("Path parameters:")
+        self.form_widget = QWidget()
         self.setLayout(self.box_layout)
-     
-    _dheck_boxes = []
 
-    def update(self, view_model: WindowViewModel):
-        self._dheck_boxes = []
+    """ Public """
+
+    def update(self, view_model: ViewModel):
+        self._check_boxes = []
+        self._path_param_lines = []
         self.box_layout.removeWidget(self.info_label)
+        self.box_layout.removeWidget(self.path_param_values_label)
+        self.box_layout.removeWidget(self.form_widget)
         self.info_label = QWidget()
         self.info_layout = QVBoxLayout()
         self.info_label.setLayout(self.info_layout)
+
+        self.form_widget = QWidget()
+        self.form_layout = QFormLayout()
+        self.form_layout.setFormAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
+        self.form_widget.setMinimumWidth(500)
+        self.form_widget.setLayout(self.form_layout)
+        self.box_layout.addWidget(self.path_param_values_label)
+        self.box_layout.addWidget(self.form_widget)
         self.box_layout.addWidget(self.info_label)
-        for value_type in view_model.dynamic_values:
-            for value in view_model.dynamic_values[value_type]:
-                print("value_type + ' - ' + value")
-                print(value_type + ' - ' + value)
-                self._selected.add(value_type + ' - ' + value)
+
+        if view_model.request_content.path_params:
+            self.path_param_values_label.setVisible(True)
+            for path_param in view_model.request_content.path_params:
+                self._add_path_param_row(path_param)
+        else:
+            self.path_param_values_label.setVisible(False)
 
         self.info_layout.addWidget(QLabel("Which values are dynamic?"))
 
-        for header in view_model.request_content.headers:
-            self._add_check_box('HEADER', header)
+        if view_model.request_content.path_params:
+            for path_param in view_model.request_content.path_params:
+                is_checked = view_model.dynamic_values["PATH PARAM"]
+                self._add_check_box("PATH PARAM", path_param, is_checked)
 
         if view_model.request_content.query_params:
             for query_param in view_model.request_content.query_params:
-                self._add_check_box('QUERY PARAM', query_param)
+                is_checked = query_param in view_model.dynamic_values["QUERY PARAM"]
+                self._add_check_box("QUERY PARAM", query_param, is_checked)
+
+        for header in view_model.request_content.headers:
+            is_checked = header in view_model.dynamic_values["HEADER"]
+            self._add_check_box("HEADER", header, is_checked)
 
         if view_model.request_content.body_param_rows:
-            for query_param in view_model.request_content.body_param_rows:
-                self._add_check_box('BODY PARAM', query_param)
-
+            for param_name in view_model.request_content.param_names:
+                is_checked = param_name[0] in view_model.dynamic_values["BODY PARAM"]
+                self._add_check_box("BODY PARAM", param_name[0], is_checked)
 
         self.setLayout(self.box_layout)
 
-    def _add_check_box(self, param_type, title):
-        check_box = QCheckBox(param_type + ' - ' + title)
-        if param_type + ' - ' + title in self._selected:
+    """ Private """
+
+    def _add_check_box(self, param_type, title, is_checked):
+        check_box = QCheckBox(param_type + " - " + title)
+        if is_checked:
             check_box.setChecked(True)
-        self._dheck_boxes.append(check_box)
-        check_box.stateChanged.connect(self._on_change)
+        self._check_boxes.append(check_box)
+        check_box.stateChanged.connect(self._on_dynamic_parameter_selection_change)
         self.info_layout.addWidget(check_box)
 
-    def _on_change(self):
-        for box in self._dheck_boxes:
+    def _add_path_param_row(self, param_name):
+        path_param_line_edit = QLineEdit()
+        self._path_param_lines.append(path_param_line_edit)
+        self.form_layout.addRow(param_name + " = ", path_param_line_edit)
+        if param_name in self.presenter.path_parameters_dictionary:
+            text = self.presenter.path_parameters_dictionary[param_name]
+            path_param_line_edit.setText(text)
+        path_param_line_edit.textChanged.connect(self._on_path_param_line_edit_change)
+
+    def _on_path_param_line_edit_change(self):
+        params = {}
+        for index, line in enumerate(self._path_param_lines):
+            param_name = (
+                self.form_layout.itemAt(index, 0).widget().text().replace(" = ", "")
+            )
+            param_value = line.text()
+            params[param_name] = param_value
+        self.presenter.on_path_param_line_edit_change(params)
+
+    def _on_dynamic_parameter_selection_change(self):
+        selected = set()
+        for box in self._check_boxes:
             if box.isChecked():
-                self._selected.add(box.text())
-            else:
-                if box.text() in self._selected:
-                    self._selected.remove(box.text())
-        self.presenter.on_dynamic_parameter_selection_change(self._selected)
+                selected.add(box.text())
+        self.presenter.on_dynamic_parameter_selection_change(selected)

@@ -1,3 +1,4 @@
+from curl2swift.processing.prepare_enum_cases import prepare_enum_cases
 import subprocess
 import re
 
@@ -17,13 +18,61 @@ from curl2swift.constants import TWO_LEVEL_INDENT_SEP
 
 
 def process_request_template(
-    request_name, description, content: ParsedContent, response_model, dynamic_values
+    request_name,
+    description,
+    content: ParsedContent,
+    response_model,
+    dynamic_values,
+    path_params,
 ):
     logging.info("Processing request template")
     processed_template = REQUEST_TEMPLATE
     processed_template = processed_template.replace("<REQUEST_NAME>", request_name)
     processed_template = processed_template.replace("<DESC>", description)
     processed_template = processed_template.replace("<PATH>", content.path)
+
+    path_param_rows = [
+        "setPathParameter(." + param_name + ', "' + path_params[param_name] + '")'
+        for param_name in path_params
+        if param_name not in dynamic_values["PATH PARAM"]
+    ]
+    if path_param_rows:
+        processed_template = processed_template.replace(
+            "<PATH_PARAMS_INIT>", TWO_LEVEL_INDENT_SEP.join(path_param_rows)
+        )
+    else:
+        processed_template = processed_template.replace(
+            "<PATH_PARAMS_INIT>\n        ", ""
+        )
+
+    header_rows = [
+        "setHeader(." + header + ', "' + content.headers[header] + '")'
+        for header in content.headers
+        if header not in dynamic_values["HEADER"]
+    ]
+    if header_rows:
+        processed_template = processed_template.replace(
+            "<HEADER_PARAMS_INIT>", TWO_LEVEL_INDENT_SEP.join(header_rows)
+        )
+    else:
+        processed_template = processed_template.replace(
+            "<HEADER_PARAMS_INIT>\n        ", ""
+        )
+
+    body_param_rows = [
+        "setBodyParameter(." + param[0] + ', "' + param[1] + '")'
+        for param in content.param_names
+        if param[0] not in dynamic_values["BODY PARAM"]
+    ]
+    if body_param_rows:
+        processed_template = processed_template.replace(
+            "<BODY_PARAMS_INIT>", TWO_LEVEL_INDENT_SEP.join(body_param_rows)
+        )
+    else:
+        processed_template = processed_template.replace(
+            "<BODY_PARAMS_INIT>\n        ", ""
+        )
+
     processed_template = processed_template.replace(
         "<METHOD>", "." + content.method.lower()
     )
@@ -35,12 +84,15 @@ def process_request_template(
         "<BODY_PARAMS>", TWO_LEVEL_INDENT_SEP.join(content.body_param_rows)
     )
 
-    processed_template = process_query_params(content.query_params, processed_template)
+    processed_template = process_query_params(
+        content.query_params, processed_template, dynamic_values
+    )
 
     processed_template = processed_template.replace(
-        "<PATH_PARAMS>", TWO_LEVEL_INDENT_SEP.join(content.path_param_rows)
+        "<PATH_PARAMS>",
+        TWO_LEVEL_INDENT_SEP.join(["case " + param for param in content.path_params]),
     )
-    if content.path_param_rows:
+    if content.path_params:
         processed_template = processed_template.replace(
             "<PATH_PARAM_SETTER>", PATH_PARAM_SETTER
         )
@@ -50,7 +102,7 @@ def process_request_template(
             "",
             processed_template,
         )
-        processed_template = re.sub(r"\n\s*<PATH_PARAM_SETTER>", "", processed_template)
+        processed_template = re.sub("\n\s*<PATH_PARAM_SETTER>", "", processed_template)
 
     if content.headers:
         processed_template = processed_template.replace(
@@ -64,7 +116,7 @@ def process_request_template(
             r"\n\s*<HEADER_PARAM_SETTER>", "", processed_template
         )
 
-    if content.body_param_rows:
+    if content.param_names:
         processed_template = processed_template.replace(
             "<BODY_PARAM_SETTER>", BODY_PARAM_SETTER
         )
@@ -74,17 +126,8 @@ def process_request_template(
             "",
             processed_template,
         )
-        processed_template = re.sub(r"\n\s*<BODY_PARAM_SETTER>", "", processed_template)
+        processed_template = re.sub("\n\s*<BODY_PARAM_SETTER>", "", processed_template)
 
     processed_template = processed_template.replace("<RESPONSE>", response_model)
-
-    # TODO: Move to presentation layer
-    # print("\n" + "- " * 9)
-    # print("GENERATED REQUEST:")
-    # print("" + "- " * 9 + "\n")
-    # pprint_color(processed_template)
-    # print("\n" + "- " * 12)
-    # print("END OF GENERATED OUTPUT")
-    # print("" + "- " * 12 + "\n")
 
     return processed_template

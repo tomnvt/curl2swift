@@ -1,4 +1,6 @@
-from subprocess import SubprocessError
+from curl2swift.utils.pprint_color import pprint_color
+import subprocess
+from sys import path
 from curl2swift.parsing.get_parser import get_curl_parser
 from curl2swift.parsing.parse_content import get_request_content
 from curl2swift.parsing.get_request_name_and_description import (
@@ -13,7 +15,7 @@ from curl2swift.processing.process_request_template import (
 cached_response = {}
 
 
-def parse_inputs(user_input, should_make_request=False):
+def parse_inputs(user_input, should_make_request=False, path_params={}):
     global cached_response
     parser = get_curl_parser()
     if user_input:
@@ -21,7 +23,10 @@ def parse_inputs(user_input, should_make_request=False):
     else:
         request_name, description = get_request_name_and_description()
     request_content, response_json = get_request_content(
-        parser, user_input.curl, should_make_request
+        parser,
+        user_input.curl if user_input else None,
+        should_make_request,
+        path_params,
     )
     if should_make_request:
         cached_response = response_json
@@ -31,34 +36,73 @@ def parse_inputs(user_input, should_make_request=False):
 
 
 def process_inputs(
-    request_name, description, request_content, response_json, is_windowed, dynamic_values={}
+    request_name,
+    description,
+    request_content,
+    response_json,
+    is_windowed,
+    dynamic_values={},
+    path_params={},
 ):
     response_model = create_response_model(response_json)
     request = process_request_template(
-        request_name, description, request_content, response_model, dynamic_values
+        request_name,
+        description,
+        request_content,
+        response_model,
+        dynamic_values,
+        path_params,
     )
 
     if not is_windowed:
+        print("\n" + "- " * 9)
+        print("GENERATED REQUEST:")
+        print("" + "- " * 9 + "\n")
+        pprint_color(request)
+        print("\n" + "- " * 12)
+        print("END OF GENERATED OUTPUT")
+        print("" + "- " * 12 + "\n")
+
         should_copy = input("Copy output to clipboard? [y/n]\n")
 
         if should_copy == "y":
-            SubprocessError.run("pbcopy", universal_newlines=True, input=request)
+            subprocess.run("pbcopy", universal_newlines=True, input=request)
 
-    unit_test = process_test_template(request_name, request_content, dynamic_values)
+    unit_test = process_test_template(
+        request_name, request_content, dynamic_values, path_params
+    )
 
     if not is_windowed:
-        should_copy = input("Copy output to clipboard? [y/n]\n")
+        print("\n" + "- " * 8)
+        print("GENERATED TEST:")
+        print("" + "- " * 8 + "\n")
+        pprint_color(unit_test)
+        print("\n" + "- " * 12)
+        print("END OF GENERATED OUTPUT")
+        print("" + "- " * 12 + "\n")
 
         if should_copy == "y":
-            SubprocessError.run("pbcopy", universal_newlines=True, input=unit_test)
+            subprocess.run("pbcopy", universal_newlines=True, input=unit_test)
 
     return request, unit_test
 
 
-def run_main_process(user_input, is_windowed=False, should_make_request=False, dynamic_values={}):
+def run_main_process(
+    user_input=None,
+    is_windowed=False,
+    should_make_request=False,
+    dynamic_values={},
+    path_params={},
+):
     request_name, description, request_content, response_json = parse_inputs(
-        user_input, should_make_request
+        user_input, should_make_request, path_params
     )
     return process_inputs(
-        request_name, description, request_content, response_json, is_windowed, dynamic_values
+        request_name,
+        description,
+        request_content,
+        response_json,
+        is_windowed,
+        dynamic_values,
+        path_params,
     )

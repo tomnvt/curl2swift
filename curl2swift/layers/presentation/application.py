@@ -14,7 +14,6 @@ class Application:
         size = screen.size()
         screen_width = size.width()
         cls.window = ContentView(screen_width)
-        cls.window.setMaximumWidth(size.width())
 
         main_window = MainWindow()
         main_window.setup(lambda label: cls.handle_menu_button_tap(cls, label))
@@ -24,9 +23,12 @@ class Application:
 
     def handle_menu_button_tap(self, label):
         if label == "request_view":
-            self.window.left_half_frame.show()
-            self.window.templates_view.hide()
-        elif label == "templates_view":
-            self.window.left_half_frame.hide()
-            self.window.templates_view.show()
-            self.window.templates_view.setFocus()
+            if self.window.left_half_frame.isVisible():
+                self.window.left_half_frame.hide()
+            else:
+                self.window.left_half_frame.show()
+        if label == "output_view":
+            if self.window.tabs.isVisible():
+                self.window.tabs.hide()
+            else:
+                self.window.tabs.show()

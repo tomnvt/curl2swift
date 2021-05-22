@@ -1,3 +1,4 @@
+import re
 import sys
 import subprocess
 from urllib.parse import urlparse
@@ -19,7 +20,7 @@ ParsedContent = namedtuple(
         "query_params",
         "headers",
         "param_names",
-        "path_param_rows",
+        "path_params",
         "header_rows",
         "body_param_rows",
     ],
@@ -68,7 +69,7 @@ def get_parameter_names(request_properties):
     return []
 
 
-def get_request_content(parser, curl, make_request=False):
+def get_request_content(parser, curl, make_request, path_params_dict):
     curl = get_curl(curl)
 
     test_curl = "curl -i https://api.github.com/users/defunkt"
@@ -82,12 +83,11 @@ def get_request_content(parser, curl, make_request=False):
         request_properties = get_request_properties(test_curl, parser)
 
     logging.info("Transforming cURL to Python request object")
-    path_param_rows = []  # NOTE: path params are not yet supported
-    param_names = []
-    method = request_properties.method
     parsed_url = urlparse(request_properties.url)
+    path_params = re.findall("{(.+?)}", parsed_url.path)
+    method = request_properties.method
 
-    param_names = get_parameter_names(request_properties)
+    query_param_names = get_parameter_names(request_properties)
     headers = request_properties.headers
     url = parsed_url.scheme + "://" + parsed_url.netloc
     path = parsed_url.path
@@ -105,9 +105,9 @@ def get_request_content(parser, curl, make_request=False):
     logging.info("Found path: " + path)
     logging.info("Found query params: " + str(query_params))
     logging.info("Found headers: " + str(headers))
-    logging.info("Found body params: " + str(param_names))
+    logging.info("Found body params: " + str(query_param_names))
 
-    request_code = create_request(request_properties)
+    request_code = create_request(request_properties, path_params_dict)
     if make_request:
         # TODO: Add request validation
         try:
@@ -117,7 +117,7 @@ def get_request_content(parser, curl, make_request=False):
     else:
         response_json = {}
     header_rows = prepare_enum_cases(list(headers.keys()), "header")
-    body_param_rows = prepare_enum_cases(param_names, "param")
+    body_param_rows = prepare_enum_cases(query_param_names, "param")
 
     content = ParsedContent(
         url,
@@ -125,8 +125,8 @@ def get_request_content(parser, curl, make_request=False):
         path,
         query_params,
         headers,
-        param_names,
-        path_param_rows,
+        query_param_names,
+        path_params,
         header_rows,
         body_param_rows,
     )

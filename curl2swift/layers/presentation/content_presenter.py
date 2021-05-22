@@ -2,11 +2,11 @@ from curl2swift.parsing.get_parser import get_curl_parser
 from curl2swift.parsing.parse_content import ParsedContent, get_request_content
 from curl2swift.run_main_process import run_main_process
 
-from collections import namedtuple
 from dataclasses import dataclass
 
+
 @dataclass
-class WindowViewModel:
+class ViewModel:
     request_content: ParsedContent
     request_tab_text: str
     unit_test_tab_text: str
@@ -15,35 +15,87 @@ class WindowViewModel:
 
 class ContentPresenter:
 
-    user_input = None
-    dynamic_values = {'HEADER': [], 'QUERY PARAM': [], 'BODY PARAM': []}
+    _user_input = None
+    dynamic_values = {
+        "HEADER": [],
+        "QUERY PARAM": [],
+        "BODY PARAM": [],
+        "PATH PARAM": [],
+    }
+    path_parameters_dictionary = {}
 
-    def __init__(self, on_change):
+    def __init__(self, on_change, on_dynamic_values_change):
         self.on_change = on_change
+        self.on_dynamic_values_change = on_dynamic_values_change
 
     def on_input_changed(self, user_input):
-        # TODO: Handle selected dynamic values migration
-        self.user_input = user_input
-        request, unit_test = run_main_process(user_input, True)
-        self.update(user_input, request, unit_test, self.dynamic_values)
+        self._user_input = user_input
+        self._update(update_dynamic_values=True)
 
     def on_go_button_click(self):
-        if self.user_input:
-            request, unit_test = run_main_process(self.user_input, True, True)
-            self.update(self.user_input, request, unit_test)
-
-    def update(self, user_input, request, unit_test, dynamic_values):
-        parser = get_curl_parser()
-        content, _ = get_request_content(parser, user_input.curl)
-        view_model = WindowViewModel(content, request, unit_test, self.dynamic_values)
-        self.on_change(view_model)
+        self._update(make_request=True)
 
     def on_dynamic_parameter_selection_change(self, selected):
-        dynamic_values = {'HEADER': [], 'QUERY PARAM': [], 'BODY PARAM': []}
+        dynamic_values = {
+            "HEADER": [],
+            "QUERY PARAM": [],
+            "BODY PARAM": [],
+            "PATH PARAM": [],
+        }
         for selected_pair in selected:
-            split = selected_pair.split(' - ')
+            split = selected_pair.split(" - ")
             dynamic_values[split[0]].append(split[1])
         self.dynamic_values = dynamic_values
-        request, unit_test = run_main_process(self.user_input, True, False, dynamic_values)
-        self.update(self.user_input, request, unit_test, dynamic_values)
+        self._update()
 
+    def on_path_param_line_edit_change(self, params: dict):
+        if params != self.path_parameters_dictionary:
+            self.path_parameters_dictionary = params
+        self._update(update_dynamic_values=False)
+
+    def _update(self, make_request=False, update_dynamic_values=False):
+        if self._user_input:
+            parser = get_curl_parser()
+            content, _ = get_request_content(
+                parser, self._user_input.curl, False, self.path_parameters_dictionary
+            )
+
+            dynamic_values = {
+                "HEADER": [],
+                "QUERY PARAM": [],
+                "BODY PARAM": [],
+                "PATH PARAM": [],
+            }
+            for header in self.dynamic_values["HEADER"]:
+                if not content.headers:
+                    continue
+                if header in content.headers:
+                    dynamic_values["HEADER"].append(header)
+            for param in self.dynamic_values["QUERY PARAM"]:
+                if not content.query_params:
+                    continue
+                if param in content.query_params:
+                    dynamic_values["QUERY PARAM"].append(param)
+            for body_param in self.dynamic_values["BODY PARAM"]:
+                if not content.param_names:
+                    continue
+                if body_param in [pair[0] for pair in content.param_names]:
+                    dynamic_values["BODY PARAM"].append(body_param)
+            for param in self.dynamic_values["PATH PARAM"]:
+                if not content.path_params:
+                    continue
+                if param in content.path_params:
+                    dynamic_values["PATH PARAM"].append(param)
+
+            self.dynamic_values = dynamic_values
+            request, unit_test = run_main_process(
+                self._user_input,
+                True,
+                make_request,
+                self.dynamic_values,
+                self.path_parameters_dictionary,
+            )
+            view_model = ViewModel(content, request, unit_test, self.dynamic_values)
+            self.on_change(view_model)
+            if update_dynamic_values:
+                self.on_dynamic_values_change(view_model)

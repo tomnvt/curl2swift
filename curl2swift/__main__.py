@@ -12,7 +12,7 @@ def main():
         Application.run()
     logger.setup()
     handle_options()
-    run_main_process()
+    run_main_process(should_make_request=True)
 
 
 if __name__ == "__main__":

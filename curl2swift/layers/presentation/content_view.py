@@ -1,9 +1,12 @@
-from curl2swift.layers.presentation.dynamic_parameters_selector_view import DynamicParamsSelectorView
+from PyQt5 import QtCore
+from curl2swift.layers.presentation.dynamic_parameters_selector_view import (
+    DynamicParamsSelectorView,
+)
 from curl2swift.__main__ import main
 
 from curl2swift.layers.presentation.content_presenter import (
     ContentPresenter,
-    WindowViewModel,
+    ViewModel,
 )
 from typing import NamedTuple
 
@@ -22,7 +25,7 @@ from PyQt5.QtWidgets import (
 )
 
 EXAMPLE_CURL = """
-curl --location --request POST 'https://www.host.com/path/morePath?queryParam=value' \\
+curl --location --request POST 'https://www.host.com/path/{pathParam}/morePath?queryParam=value' \\
 --header 'Accept-Encoding: gzip;q=1.0, compress;q=0.5' \\
 --header 'Accept-Language: en;q=1.0, cs-CZ;q=0.9' \\
 --header 'Content-Type: application/x-www-form-urlencoded' \\
@@ -39,6 +42,11 @@ class UserInput(NamedTuple):
 
 
 class ContentView(QWidget):
+
+    """ Properties """
+
+    info_labels = []
+
     @property
     def user_input(self):
         request_name = self.request_name_input.text()
@@ -46,32 +54,18 @@ class ContentView(QWidget):
         curl = self.curl_text_edit.toPlainText()
         return UserInput(request_name, description, curl)
 
-    def on_input_change(self):
-        self.presenter.on_input_changed(self.user_input)
-
-    def on_go_button_click(self):
-        self.presenter.on_go_button_click()
-
-    info_labels = []
-
-    def on_change(self, view_model: WindowViewModel):
-        self.unit_test_text_edit.setText(view_model.unit_test_tab_text)
-        self.request_text_edit.setText(view_model.request_tab_text)
-        self._set_dynamic_params_selector(view_model)
-
-
-    def _set_dynamic_params_selector(self, view_model):
-        self.selector.update(view_model)
-
+    """ Init """
 
     def __init__(self, screen_width):
         super().__init__()
-        self.presenter = ContentPresenter(self.on_change)
+        self.presenter = ContentPresenter(
+            self.on_output_change, self.on_dynamic_values_change
+        )
         self.selector = DynamicParamsSelectorView(self.presenter)
 
         """ Widgets """
         # cURL input field
-        self.request_name_input = QLineEdit()
+        self.request_name_input = QLineEdit("Aha")
         self.description_input = QLineEdit()
         self.curl_text_edit = QPlainTextEdit()
         self.description_input.setText("Add description")
@@ -93,57 +87,68 @@ class ContentView(QWidget):
         form_layout = QFormLayout()
         form_layout.addRow("Request name: ", self.request_name_input)
         form_layout.addRow("Description: ", self.description_input)
+        form_layout.setFormAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
+        form_layout.setContentsMargins(0, 10, 0, 10)
         self.left_half_layout.addLayout(form_layout)
         self.left_half_layout.addWidget(self.curl_label)
         self.left_half_layout.addWidget(self.curl_text_edit)
 
-        self.templates_view = self.get_templates_tabs(screen_width)
-
         layout.addWidget(self.left_half_frame, 0, 0)
-        layout.addWidget(self.templates_view, 0, 0)
 
         # Right half
-        tabs = self.get_tabs(screen_width)
-        layout.addWidget(tabs, 0, 1)
+        self.tabs = self._get_tabs(screen_width)
+        layout.addWidget(self.tabs, 0, 1)
 
         # Overlay
         self.setLayout(layout)
-        self.templates_view.hide()
 
-        self.request_name_input.textChanged.connect(self.on_input_change)
-        self.description_input.textChanged.connect(self.on_input_change)
-        self.curl_text_edit.textChanged.connect(self.on_input_change)
-        self.go_button.clicked.connect(self.on_go_button_click)
+        self.request_name_input.textChanged.connect(self._on_input_change)
+        self.description_input.textChanged.connect(self._on_input_change)
+        self.curl_text_edit.textChanged.connect(self._on_input_change)
+        self.go_button.clicked.connect(self._on_go_button_click)
 
         self.request_name_input.setText("Example")
 
         self.left_half_layout.addWidget(self.selector)
         self.curl_text_edit.setPlainText(EXAMPLE_CURL)
 
-    def get_tabs(self, screen_width):
+    def _get_tabs(self, screen_width):
         tabs = QTabWidget()
         self.request_text_edit = QTextEdit()
         self.unit_test_text_edit = QTextEdit()
         self.request_call_text_edit = QTextEdit()
         tabs.addTab(
-            self.create_tab([self.request_text_edit, self.go_button]), "Request"
+            self._create_tab([self.request_text_edit, self.go_button]), "Request"
         )
-        tabs.addTab(self.create_tab([self.unit_test_text_edit]), "Unit test")
-        tabs.addTab(self.create_tab([self.request_call_text_edit]), "Request call")
+        tabs.addTab(self._create_tab([self.unit_test_text_edit]), "Unit test")
         return tabs
 
-    def get_templates_tabs(self, screen_width):
-        tabs = QTabWidget()
-        self.request_template_text_edit = QTextEdit()
-        self.unit_test_template_text_edit = QTextEdit()
-        tabs.addTab(self.create_tab([self.request_template_text_edit]), "RequestSpecBuilder")
-        tabs.addTab(self.create_tab([self.unit_test_template_text_edit]), "Unit test")
-        return tabs
-
-    def create_tab(self, widgets):
+    def _create_tab(self, widgets):
         tab_widget = QWidget()
         layout = QVBoxLayout()
         for widget in widgets:
             layout.addWidget(widget)
         tab_widget.setLayout(layout)
         return tab_widget
+
+    """ Interaction binding """
+
+    def _on_input_change(self):
+        self.presenter.on_input_changed(self.user_input)
+
+    def _on_go_button_click(self):
+        self.presenter.on_go_button_click()
+
+    """ Data handling """
+
+    def on_output_change(self, view_model: ViewModel):
+        scroll_position = self.unit_test_text_edit.verticalScrollBar().value()
+        self.unit_test_text_edit.setText(view_model.unit_test_tab_text)
+        self.unit_test_text_edit.verticalScrollBar().setValue(scroll_position)
+
+        scroll_position = self.request_text_edit.verticalScrollBar().value()
+        self.request_text_edit.setText(view_model.request_tab_text)
+        self.request_text_edit.verticalScrollBar().setValue(scroll_position)
+
+    def on_dynamic_values_change(self, view_model: ViewModel):
+        self.selector.update(view_model)
