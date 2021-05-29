@@ -5,7 +5,7 @@ from curl2swift.processing.request_template.process_query_params import (
 
 def test_process_query_params():
     params = {"q": "prague", "appid": "theAppID", "units": "metric"}
-    result = process_query_params(params, "<QUERY_PARAMS_INIT>")
+    result = process_query_params(params, "<QUERY_PARAMS_INIT>", {"QUERY PARAM": []})
     assert (
         result
         == 'set(.queryParams(["q": "prague", "appid": "theAppID", "units": "metric"]))'

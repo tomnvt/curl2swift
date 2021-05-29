@@ -51,6 +51,12 @@ def create_response_model(response_json, model_name="Response"):
     properties = []
     coding_keys = []
 
+    if not isinstance(response_json, dict):
+        swift_type = get_value_type_in_swift(
+            key="", value=response_json, is_in_list=False
+        )
+        return "typealias Response = " + swift_type + "\n"
+
     for key in response_json:
         value = response_json[key]
         value_type = get_value_type_in_swift(key, value)
