@@ -47,7 +47,7 @@ setup(
     ],
     packages=find_packages(include=["curl2swift", "curl2swift.*"]),
     include_package_data=True,
-    install_requires=["Pygments", "requests", "gitpython"],
+    install_requires=["Pygments", "requests", "gitpython", "QScintilla", "PyQt5"],
     entry_points={
         "console_scripts": [
             "curl2swift=curl2swift.__main__:main",

@@ -1,3 +1,4 @@
+from curl2swift.layers.presentation.highlighted_text_view import View
 from PyQt5 import QtCore
 from curl2swift.layers.presentation.dynamic_parameters_selector_view import (
     DynamicParamsSelectorView,
@@ -14,13 +15,13 @@ from PyQt5.QtWidgets import (
     QCheckBox,
     QFormLayout,
     QFrame,
-    QGridLayout,
+    QHBoxLayout,
     QLabel,
     QLineEdit,
     QPlainTextEdit,
     QPushButton,
+    QSplitter,
     QTabWidget,
-    QTextEdit,
     QVBoxLayout,
     QWidget,
 )
@@ -66,7 +67,7 @@ class ContentView(QWidget):
 
         """ Widgets """
         # cURL input field
-        self.request_name_input = QLineEdit("Aha")
+        self.request_name_input = QLineEdit()
         self.description_input = QLineEdit()
         self.curl_text_edit = QPlainTextEdit()
         self.description_input.setText("Add description")
@@ -85,7 +86,9 @@ class ContentView(QWidget):
         self.setWindowTitle("curl2swift")
 
         """ Layout """
-        layout = QGridLayout()
+        layout = QHBoxLayout()
+        splitter = QSplitter()
+        layout.addWidget(splitter)
 
         # Left half
         self.left_half_frame = QFrame()
@@ -100,11 +103,17 @@ class ContentView(QWidget):
         self.left_half_layout.addWidget(self.curl_label)
         self.left_half_layout.addWidget(self.curl_text_edit)
 
-        layout.addWidget(self.left_half_frame, 0, 0)
+        splitter.addWidget(self.left_half_frame)
 
         # Right half
-        self.tabs = self._get_tabs(screen_width)
-        layout.addWidget(self.tabs, 0, 1)
+        self.right_half_frame = QFrame()
+        self.right_half_frame.resize(QtCore.QSize(screen_width/2.5, 0))
+        self.right_half_layout = QVBoxLayout()
+        self.right_half_frame.setLayout(self.right_half_layout)
+        self.tabs = self._get_tabs()
+        self.right_half_layout.addWidget(self.tabs)
+
+        splitter.addWidget(self.right_half_frame)
 
         # Overlay
         self.setLayout(layout)
@@ -119,11 +128,10 @@ class ContentView(QWidget):
         self.left_half_layout.addWidget(self.selector)
         self.curl_text_edit.setPlainText(EXAMPLE_CURL)
 
-    def _get_tabs(self, screen_width):
+    def _get_tabs(self):
         tabs = QTabWidget()
-        self.request_text_edit = QTextEdit()
-        self.unit_test_text_edit = QTextEdit()
-        self.request_call_text_edit = QTextEdit()
+        self.request_text_edit = View("swift")
+        self.unit_test_text_edit = View("swift")
         tabs.addTab(
             self._create_tab([self.request_text_edit, self.go_button]), "Request"
         )
