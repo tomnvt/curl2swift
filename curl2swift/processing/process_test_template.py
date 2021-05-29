@@ -1,3 +1,4 @@
+from curl2swift.layers.domain.parameter_type import ParameterType
 from curl2swift.parsing.parse_content import ParsedContent
 import re
 from sys import path
@@ -9,7 +10,7 @@ from curl2swift.templates.test_template import TEST_TEMPLATE
 def get_path_param_setters(dynamic_values, path_params):
     path_param_setters = []
     for path_param in path_params:
-        if path_param not in dynamic_values["PATH PARAM"]:
+        if path_param not in dynamic_values[ParameterType.PATH_PARAM]:
             continue
         value = path_params[path_param]
         path_param_setters.append(
@@ -23,7 +24,7 @@ def get_query_param_setters(content: ParsedContent, dynamic_values):
     if not content.query_params:
         return []
     for param in content.query_params:
-        if param not in dynamic_values["QUERY PARAM"]:
+        if param not in dynamic_values[ParameterType.QUERY_PARAM]:
             continue
         query_param_setters.append(
             ".setQueryParameter(." + param + ', "' + content.query_params[param] + '")'
@@ -34,7 +35,7 @@ def get_query_param_setters(content: ParsedContent, dynamic_values):
 def get_header_setters(content, dynamic_values):
     header_setters = []
     for index, header in enumerate(content.headers):
-        if dynamic_values and header not in dynamic_values["HEADER"]:
+        if dynamic_values and header not in dynamic_values[ParameterType.HEADER]:
             continue
         value = content.headers[header]
         enum_case = re.findall("case (.*) =", content.header_rows[index])[0]
@@ -47,7 +48,7 @@ def get_body_param_setters(content, dynamic_values):
     for index, param in enumerate(content.param_names):
         if (
             dynamic_values
-            and content.param_names[index][0] not in dynamic_values["BODY PARAM"]
+            and content.param_names[index][0] not in dynamic_values[ParameterType.BODY_PARAM]
         ):
             continue
         if len(param) == 1:

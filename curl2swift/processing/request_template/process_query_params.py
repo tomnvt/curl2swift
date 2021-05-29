@@ -1,3 +1,4 @@
+from curl2swift.layers.domain.parameter_type import ParameterType
 import re
 
 from curl2swift.utils.logger import logging
@@ -17,7 +18,7 @@ def process_query_params(query_params, processed_template, dynamic_values):
         )
         query_params_dict_entries = []
         for query_param_key in query_params:
-            if query_param_key not in dynamic_values["QUERY PARAM"]:
+            if query_param_key not in dynamic_values[ParameterType.QUERY_PARAM]:
                 query_params_dict_entries.append(
                     '"' + query_param_key + '": "' + query_params[query_param_key] + '"'
                 )

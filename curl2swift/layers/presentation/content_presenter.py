@@ -1,3 +1,4 @@
+from curl2swift.layers.domain.parameter_type import ParameterType
 from curl2swift.parsing.get_parser import get_curl_parser
 from curl2swift.parsing.parse_content import ParsedContent, get_request_content
 from curl2swift.run_main_process import run_main_process
@@ -13,14 +14,15 @@ class ViewModel:
     dynamic_values: dict
 
 
+
 class ContentPresenter:
 
     _user_input = None
     dynamic_values = {
-        "HEADER": [],
-        "QUERY PARAM": [],
-        "BODY PARAM": [],
-        "PATH PARAM": [],
+        ParameterType.HEADER: [],
+        ParameterType.QUERY_PARAM: [],
+        ParameterType.BODY_PARAM: [],
+        ParameterType.PATH_PARAM: [],
     }
     path_parameters_dictionary = {}
 
@@ -37,14 +39,15 @@ class ContentPresenter:
 
     def on_dynamic_parameter_selection_change(self, selected):
         dynamic_values = {
-            "HEADER": [],
-            "QUERY PARAM": [],
-            "BODY PARAM": [],
-            "PATH PARAM": [],
+            ParameterType.HEADER: [],
+            ParameterType.QUERY_PARAM: [],
+            ParameterType.BODY_PARAM: [],
+            ParameterType.PATH_PARAM: [],
         }
         for selected_pair in selected:
             split = selected_pair.split(" - ")
-            dynamic_values[split[0]].append(split[1])
+            enum_case = ParameterType(split[0])
+            dynamic_values[enum_case].append(split[1])
         self.dynamic_values = dynamic_values
         self._update()
 
@@ -61,31 +64,31 @@ class ContentPresenter:
             )
 
             dynamic_values = {
-                "HEADER": [],
-                "QUERY PARAM": [],
-                "BODY PARAM": [],
-                "PATH PARAM": [],
+                ParameterType.HEADER: [],
+                ParameterType.QUERY_PARAM: [],
+                ParameterType.BODY_PARAM: [],
+                ParameterType.PATH_PARAM: [],
             }
-            for header in self.dynamic_values["HEADER"]:
+            for header in self.dynamic_values[ParameterType.HEADER]:
                 if not content.headers:
                     continue
                 if header in content.headers:
-                    dynamic_values["HEADER"].append(header)
-            for param in self.dynamic_values["QUERY PARAM"]:
+                    dynamic_values[ParameterType.HEADER].append(header)
+            for param in self.dynamic_values[ParameterType.QUERY_PARAM]:
                 if not content.query_params:
                     continue
                 if param in content.query_params:
-                    dynamic_values["QUERY PARAM"].append(param)
-            for body_param in self.dynamic_values["BODY PARAM"]:
+                    dynamic_values[ParameterType.QUERY_PARAM].append(param)
+            for body_param in self.dynamic_values[ParameterType.BODY_PARAM]:
                 if not content.param_names:
                     continue
                 if body_param in [pair[0] for pair in content.param_names]:
-                    dynamic_values["BODY PARAM"].append(body_param)
-            for param in self.dynamic_values["PATH PARAM"]:
+                    dynamic_values[ParameterType.BODY_PARAM].append(body_param)
+            for param in self.dynamic_values[ParameterType.PATH_PARAM]:
                 if not content.path_params:
                     continue
                 if param in content.path_params:
-                    dynamic_values["PATH PARAM"].append(param)
+                    dynamic_values[ParameterType.PATH_PARAM].append(param)
 
             self.dynamic_values = dynamic_values
             request, unit_test = run_main_process(

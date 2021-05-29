@@ -1,3 +1,4 @@
+from curl2swift.layers.domain.parameter_type import ParameterType
 from PyQt5 import QtCore
 from curl2swift.layers.presentation.content_presenter import (
     ContentPresenter,
@@ -65,29 +66,29 @@ class DynamicParamsSelectorView(QWidget):
 
         if view_model.request_content.path_params:
             for path_param in view_model.request_content.path_params:
-                is_checked = view_model.dynamic_values["PATH PARAM"]
-                self._add_check_box("PATH PARAM", path_param, is_checked)
+                is_checked = view_model.dynamic_values[ParameterType.PATH_PARAM]
+                self._add_check_box(ParameterType.PATH_PARAM, path_param, is_checked)
 
         if view_model.request_content.query_params:
             for query_param in view_model.request_content.query_params:
-                is_checked = query_param in view_model.dynamic_values["QUERY PARAM"]
-                self._add_check_box("QUERY PARAM", query_param, is_checked)
+                is_checked = query_param in view_model.dynamic_values[ParameterType.QUERY_PARAM]
+                self._add_check_box(ParameterType.QUERY_PARAM, query_param, is_checked)
 
         for header in view_model.request_content.headers:
-            is_checked = header in view_model.dynamic_values["HEADER"]
-            self._add_check_box("HEADER", header, is_checked)
+            is_checked = header in view_model.dynamic_values[ParameterType.HEADER]
+            self._add_check_box(ParameterType.HEADER, header, is_checked)
 
         if view_model.request_content.body_param_rows:
             for param_name in view_model.request_content.param_names:
-                is_checked = param_name[0] in view_model.dynamic_values["BODY PARAM"]
-                self._add_check_box("BODY PARAM", param_name[0], is_checked)
+                is_checked = param_name[0] in view_model.dynamic_values[ParameterType.BODY_PARAM]
+                self._add_check_box(ParameterType.BODY_PARAM, param_name[0], is_checked)
 
         self.setLayout(self.box_layout)
 
     """ Private """
 
     def _add_check_box(self, param_type, title, is_checked):
-        check_box = QCheckBox(param_type + " - " + title)
+        check_box = QCheckBox(param_type.value + " - " + title)
         if is_checked:
             check_box.setChecked(True)
         self._check_boxes.append(check_box)

@@ -1,3 +1,4 @@
+from curl2swift.layers.domain.parameter_type import ParameterType
 from curl2swift.processing.prepare_enum_cases import prepare_enum_cases
 import subprocess
 import re
@@ -34,7 +35,7 @@ def process_request_template(
     path_param_rows = [
         "setPathParameter(." + param_name + ', "' + path_params[param_name] + '")'
         for param_name in path_params
-        if param_name not in dynamic_values["PATH PARAM"]
+        if param_name not in dynamic_values[ParameterType.PATH_PARAM]
     ]
     if path_param_rows:
         processed_template = processed_template.replace(
@@ -48,7 +49,7 @@ def process_request_template(
     header_rows = [
         "setHeader(." + header + ', "' + content.headers[header] + '")'
         for header in content.headers
-        if header not in dynamic_values["HEADER"]
+        if header not in dynamic_values[ParameterType.HEADER]
     ]
     if header_rows:
         processed_template = processed_template.replace(
@@ -62,7 +63,7 @@ def process_request_template(
     body_param_rows = [
         "setBodyParameter(." + param[0] + ', "' + param[1] + '")'
         for param in content.param_names
-        if param[0] not in dynamic_values["BODY PARAM"]
+        if param[0] not in dynamic_values[ParameterType.BODY_PARAM]
     ]
     if body_param_rows:
         processed_template = processed_template.replace(
