@@ -71,7 +71,9 @@ class DynamicParamsSelectorView(QWidget):
 
         if view_model.request_content.query_params:
             for query_param in view_model.request_content.query_params:
-                is_checked = query_param in view_model.dynamic_values[ParameterType.QUERY_PARAM]
+                is_checked = (
+                    query_param in view_model.dynamic_values[ParameterType.QUERY_PARAM]
+                )
                 self._add_check_box(ParameterType.QUERY_PARAM, query_param, is_checked)
 
         for header in view_model.request_content.headers:
@@ -80,7 +82,9 @@ class DynamicParamsSelectorView(QWidget):
 
         if view_model.request_content.body_param_rows:
             for param_name in view_model.request_content.param_names:
-                is_checked = param_name[0] in view_model.dynamic_values[ParameterType.BODY_PARAM]
+                is_checked = (
+                    param_name[0] in view_model.dynamic_values[ParameterType.BODY_PARAM]
+                )
                 self._add_check_box(ParameterType.BODY_PARAM, param_name[0], is_checked)
 
         self.setLayout(self.box_layout)

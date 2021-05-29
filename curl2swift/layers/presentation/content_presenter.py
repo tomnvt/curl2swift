@@ -14,10 +14,10 @@ class ViewModel:
     dynamic_values: dict
 
 
-
 class ContentPresenter:
 
     _user_input = None
+    _use_dynamic_values_setter = False
     dynamic_values = {
         ParameterType.HEADER: [],
         ParameterType.QUERY_PARAM: [],
@@ -56,7 +56,11 @@ class ContentPresenter:
             self.path_parameters_dictionary = params
         self._update(update_dynamic_values=False)
 
-    def _update(self, make_request=False, update_dynamic_values=False):
+    def _update(
+        self,
+        make_request=False,
+        update_dynamic_values=False,
+    ):
         if self._user_input:
             parser = get_curl_parser()
             content, _ = get_request_content(
@@ -92,13 +96,18 @@ class ContentPresenter:
 
             self.dynamic_values = dynamic_values
             request, unit_test = run_main_process(
-                self._user_input,
-                True,
-                make_request,
-                self.dynamic_values,
-                self.path_parameters_dictionary,
+                user_input=self._user_input,
+                is_windowed=True,
+                should_make_request=make_request,
+                dynamic_values=self.dynamic_values,
+                path_params=self.path_parameters_dictionary,
+                use_dynamic_values_setter=self._use_dynamic_values_setter,
             )
             view_model = ViewModel(content, request, unit_test, self.dynamic_values)
             self.on_change(view_model)
             if update_dynamic_values:
                 self.on_dynamic_values_change(view_model)
+
+    def test_with_dynamic_values_setter_checkbox_change(self, checked):
+        self._use_dynamic_values_setter = checked
+        self._update()

@@ -11,6 +11,7 @@ from curl2swift.layers.presentation.content_presenter import (
 from typing import NamedTuple
 
 from PyQt5.QtWidgets import (
+    QCheckBox,
     QFormLayout,
     QFrame,
     QGridLayout,
@@ -74,6 +75,12 @@ class ContentView(QWidget):
         # Info label
         self.info_label = QWidget()
         self.go_button = QPushButton("MAKE REQUEST AND CREATE RESPONSE MAPPING")
+        self.test_with_dynamic_values_setter_checkbox = QCheckBox(
+            "Use dynamic values setter"
+        )
+        self.test_with_dynamic_values_setter_checkbox.stateChanged.connect(
+            self.presenter.test_with_dynamic_values_setter_checkbox_change
+        )
 
         self.setWindowTitle("curl2swift")
 
@@ -120,7 +127,15 @@ class ContentView(QWidget):
         tabs.addTab(
             self._create_tab([self.request_text_edit, self.go_button]), "Request"
         )
-        tabs.addTab(self._create_tab([self.unit_test_text_edit]), "Unit test")
+        tabs.addTab(
+            self._create_tab(
+                [
+                    self.unit_test_text_edit,
+                    self.test_with_dynamic_values_setter_checkbox,
+                ]
+            ),
+            "Unit test",
+        )
         return tabs
 
     def _create_tab(self, widgets):

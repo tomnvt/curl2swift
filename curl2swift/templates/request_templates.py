@@ -55,6 +55,7 @@ class <REQUEST_NAME>Request: RequestSpecBuilder {
                   headers: [String: String] = [:],
                   params: [String: Any] = [:]) {
         super.init(baseURL: baseURL, path: path, method: method, headers: headers, params: params)
+        set(.baseURL("<URL>"))
         set(.path("<PATH>"))
         <PATH_PARAMS_INIT>
         <QUERY_PARAMS_INIT>
@@ -73,5 +74,7 @@ extension <REQUEST_NAME>Request {
     <HEADER_PARAM_SETTER>
 
     <BODY_PARAM_SETTER>
+
+    <DYNAMIC_VALUES_SETTER>
 }
 """

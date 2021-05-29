@@ -43,6 +43,7 @@ def process_inputs(
     is_windowed,
     dynamic_values={},
     path_params={},
+    use_dynamic_values_setter=False,
 ):
     response_model = create_response_model(response_json)
     request = process_request_template(
@@ -69,7 +70,11 @@ def process_inputs(
             subprocess.run("pbcopy", universal_newlines=True, input=request)
 
     unit_test = process_test_template(
-        request_name, request_content, dynamic_values, path_params
+        request_name,
+        request_content,
+        dynamic_values,
+        path_params,
+        use_dynamic_values_setter,
     )
 
     if not is_windowed:
@@ -93,6 +98,7 @@ def run_main_process(
     should_make_request=False,
     dynamic_values={},
     path_params={},
+    use_dynamic_values_setter=False,
 ):
     request_name, description, request_content, response_json = parse_inputs(
         user_input, should_make_request, path_params
@@ -105,4 +111,5 @@ def run_main_process(
         is_windowed,
         dynamic_values,
         path_params,
+        use_dynamic_values_setter,
     )

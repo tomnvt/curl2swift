@@ -1,3 +1,6 @@
+from curl2swift.processing.create_dynamic_values_setter_call import (
+    create_dynamic_values_setter_call,
+)
 from curl2swift.layers.domain.parameter_type import ParameterType
 from curl2swift.parsing.parse_content import ParsedContent
 import re
@@ -48,7 +51,8 @@ def get_body_param_setters(content, dynamic_values):
     for index, param in enumerate(content.param_names):
         if (
             dynamic_values
-            and content.param_names[index][0] not in dynamic_values[ParameterType.BODY_PARAM]
+            and content.param_names[index][0]
+            not in dynamic_values[ParameterType.BODY_PARAM]
         ):
             continue
         if len(param) == 1:
@@ -74,7 +78,11 @@ def add_dynamic_value_setters(value_rows, processed_template, placeholder):
 
 
 def process_test_template(
-    request_name, content: ParsedContent, dynamic_values, path_params
+    request_name,
+    content: ParsedContent,
+    dynamic_values,
+    path_params,
+    use_dynamic_values_setter,
 ):
     logging.info("Processing unit test templacte")
     path_param_setters = get_path_param_setters(dynamic_values, path_params)
@@ -84,19 +92,42 @@ def process_test_template(
 
     processed_template = TEST_TEMPLATE
     processed_template = processed_template.replace("<URL>", content.url)
-    processed_template = processed_template.replace("<PATH>", content.path)
-    processed_template = add_dynamic_value_setters(
-        path_param_setters, processed_template, "<PATH_PARAM_SETTERS>"
-    )
-    processed_template = add_dynamic_value_setters(
-        query_param_setters, processed_template, "<QUERY_PARAM_SETTERS>"
-    )
-    processed_template = add_dynamic_value_setters(
-        header_setters, processed_template, "<HEADER_SETTERS>"
-    )
-    processed_template = add_dynamic_value_setters(
-        body_param_setters, processed_template, "<BODY_PARAM_SETTERS>"
-    )
+    if use_dynamic_values_setter:
+        for placeholder in [
+            "<PATH_PARAM_SETTERS>",
+            "<QUERY_PARAM_SETTERS>",
+            "<HEADER_SETTERS>",
+            "<BODY_PARAM_SETTERS>",
+        ]:
+            processed_template = processed_template.replace(
+                "            " + placeholder + "\n", ""
+            )
+        dynamic_values_setter_call = create_dynamic_values_setter_call(
+            content, dynamic_values, path_params
+        )
+        dynamic_values_setter_call_rows = [
+            row for row in dynamic_values_setter_call.split("\n")
+        ]
+        dynamic_values_setter_call = "\n        ".join(dynamic_values_setter_call_rows)
+        processed_template = processed_template.replace(
+            "<DYNAMIC_VALUES_SETTER_CALL>", dynamic_values_setter_call
+        )
+    else:
+        processed_template = processed_template.replace(
+            "            <DYNAMIC_VALUES_SETTER_CALL>\n", ""
+        )
+        processed_template = add_dynamic_value_setters(
+            path_param_setters, processed_template, "<PATH_PARAM_SETTERS>"
+        )
+        processed_template = add_dynamic_value_setters(
+            query_param_setters, processed_template, "<QUERY_PARAM_SETTERS>"
+        )
+        processed_template = add_dynamic_value_setters(
+            header_setters, processed_template, "<HEADER_SETTERS>"
+        )
+        processed_template = add_dynamic_value_setters(
+            body_param_setters, processed_template, "<BODY_PARAM_SETTERS>"
+        )
 
     processed_template = processed_template.replace("<REQUEST_NAME>", request_name)
 
