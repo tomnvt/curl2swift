@@ -49,7 +49,7 @@ class DynamicParamsSelectorView(QWidget):
         self.form_widget = QWidget()
         self.form_layout = QFormLayout()
         self.form_layout.setFormAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
-        self.form_widget.setMinimumWidth(500)
+        self.form_widget.setMinimumWidth(300)
         self.form_widget.setLayout(self.form_layout)
         self.box_layout.addWidget(self.path_param_values_label)
         self.box_layout.addWidget(self.form_widget)

@@ -68,8 +68,11 @@ class ContentView(QWidget):
         """ Widgets """
         # cURL input field
         self.request_name_input = QLineEdit()
+        self.request_name_input.setMinimumWidth(200)
         self.description_input = QLineEdit()
+        self.description_input.setMinimumWidth(200)
         self.curl_text_edit = QPlainTextEdit()
+        self.highlight = CurlHighlighter(self.curl_text_edit.document())
         self.description_input.setText("Add description")
         self.curl_label = QLabel("cURL:")
 
@@ -107,7 +110,7 @@ class ContentView(QWidget):
 
         # Right half
         self.right_half_frame = QFrame()
-        self.right_half_frame.resize(QtCore.QSize(screen_width / 2.5, 0))
+        self.right_half_frame.resize(QtCore.QSize(screen_width / 5, 0))
         self.right_half_layout = QVBoxLayout()
         self.right_half_frame.setLayout(self.right_half_layout)
         self.tabs = self._get_tabs()
@@ -133,7 +136,8 @@ class ContentView(QWidget):
         self.request_text_edit = HighlightedTextView()
         self.unit_test_text_edit = HighlightedTextView()
         tabs.addTab(
-            self._create_tab([self.request_text_edit, self.go_button]), "Request"
+            self._create_tab([self.request_text_edit, self.go_button]),
+            "RequestSpecBuilder",
         )
         tabs.addTab(
             self._create_tab(
@@ -175,3 +179,90 @@ class ContentView(QWidget):
 
     def on_dynamic_values_change(self, view_model: ViewModel):
         self.selector.update(view_model)
+
+
+# TODO MOVE
+
+from PyQt5.QtCore import QRegExp
+from PyQt5.QtGui import QColor, QTextCharFormat, QFont, QSyntaxHighlighter
+
+
+def format(color, style=""):
+    """Return a QTextCharFormat with the given attributes."""
+    _color = QColor()
+    _color.setNamedColor(color)
+
+    _format = QTextCharFormat()
+    _format.setForeground(_color)
+    if "bold" in style:
+        _format.setFontWeight(QFont.Bold)
+    if "italic" in style:
+        _format.setFontItalic(True)
+
+    return _format
+
+
+# Syntax styles that can be shared by all languages
+STYLES = {
+    "keyword": format("yellow"),
+    "operator": format("orange"),
+    "string": format("magenta"),
+}
+
+
+class CurlHighlighter(QSyntaxHighlighter):
+
+    keywords = [
+        "curl",
+        "command",
+        "url",
+        "d",
+        "data",
+        "b",
+        "data-binary",
+        "data-raw",
+        "data_urlencode",
+        "X",
+        "H",
+        "header",
+    ]
+
+    methods = ["GET", "POST", "PATCH", "UPDATE", "DELTE"]
+
+    def __init__(self, document):
+        QSyntaxHighlighter.__init__(self, document)
+
+        self.tri_single = (QRegExp("'''"), 1, STYLES["string"])
+        self.tri_double = (QRegExp('"""'), 2, STYLES["string"])
+
+        rules = []
+
+        # Keyword, operator, and brace rules
+        rules += [
+            (r"\b%s\b" % w, 0, STYLES["keyword"]) for w in CurlHighlighter.keywords
+        ]
+        rules += [(r"%s" % o, 0, STYLES["operator"]) for o in CurlHighlighter.methods]
+
+        # All other rules
+        rules += [
+            # Double-quoted string, possibly containing escape sequences
+            (r'"[^"\\]*(\\.[^"\\]*)*"', 0, STYLES["string"]),
+            # Single-quoted string, possibly containing escape sequences
+            (r"'[^'\\]*(\\.[^'\\]*)*'", 0, STYLES["string"]),
+        ]
+
+        # Build a QRegExp for each pattern
+        self.rules = [(QRegExp(pat), index, fmt) for (pat, index, fmt) in rules]
+
+    def highlightBlock(self, text):
+        for expression, nth, format in self.rules:
+            index = expression.indexIn(text, 0)
+
+            while index >= 0:
+                # We actually want the index of the nth match
+                index = expression.pos(nth)
+                length = len(expression.cap(nth))
+                self.setFormat(index, length, format)
+                index = expression.indexIn(text, index + length)
+
+        self.setCurrentBlockState(0)

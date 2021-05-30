@@ -1,5 +1,4 @@
 import math
-import time
 from pathlib import Path
 
 from PyQt5.Qsci import QsciLexerCustom, QsciScintilla
@@ -7,7 +6,7 @@ from PyQt5.Qt import *
 from PyQt5.QtGui import QColor, QFont
 
 from PyQt5.QtWidgets import QShortcut
-from pygments import lexers, styles, highlight
+from pygments import lexers, styles
 from pygments.lexer import Error, Text, _TokenType
 
 
@@ -34,6 +33,7 @@ EXTRA_STYLES = {
 
 
 def convert_size(size_bytes):
+    print("Called convert_size")
     if size_bytes == 0:
         return "0B"
     size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
@@ -74,11 +74,6 @@ class ViewLexer(QsciLexerCustom):
         return self.pyg_lexer.name
 
     def get_tokens_unprocessed(self, text, stack=("root",)):
-        """
-        Split ``text`` into (tokentype, text) pairs.
-
-        ``stack`` is the inital stack (default: ``['root']``)
-        """
         lexer = self.pyg_lexer
         pos = 0
         tokendefs = lexer._tokens
@@ -96,7 +91,6 @@ class ViewLexer(QsciLexerCustom):
                                 yield item
                     pos = m.end()
                     if new_state is not None:
-                        # state transition
                         if isinstance(new_state, tuple):
                             for state in new_state:
                                 if state == "#pop":
@@ -106,7 +100,6 @@ class ViewLexer(QsciLexerCustom):
                                 else:
                                     statestack.append(state)
                         elif isinstance(new_state, int):
-                            # pop
                             del statestack[new_state:]
                         elif new_state == "#push":
                             statestack.append(statestack[-1])
@@ -115,11 +108,8 @@ class ViewLexer(QsciLexerCustom):
                         statetokens = tokendefs[statestack[-1]]
                     break
             else:
-                # We are here only if all state tokens have been considered
-                # and there was not a match on any of them.
                 try:
                     if text[pos] == "\n":
-                        # at EOL, reset state to "root"
                         statestack = ["root"]
                         statetokens = tokendefs["root"]
                         yield pos, Text, "\n"
@@ -142,11 +132,8 @@ class ViewLexer(QsciLexerCustom):
 
     def styleText(self, start, end):
         view = self.editor()
-        t_start = time.time()
         self.highlight_slow(start, end)
-        t_elapsed = time.time() - t_start
         len_text = len(view.text())
-        text_size = convert_size(len_text)
 
     def description(self, style_nr):
         return str(style_nr)

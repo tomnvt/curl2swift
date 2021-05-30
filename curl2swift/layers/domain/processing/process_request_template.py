@@ -1,4 +1,4 @@
-from curl2swift.layers.domain.processing import (
+from curl2swift.layers.domain.processing.create_dynamic_values_setter import (
     create_dynamic_values_setter,
 )
 from curl2swift.layers.domain.parameter_type import ParameterType
