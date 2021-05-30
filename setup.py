@@ -12,7 +12,7 @@ HERE = pathlib.Path(__file__).parent
 README = (HERE / "README.md").read_text()
 
 # circleci.py version
-VERSION = "0.3.6"
+VERSION = "0.3.7"
 
 
 class VerifyVersionCommand(install):

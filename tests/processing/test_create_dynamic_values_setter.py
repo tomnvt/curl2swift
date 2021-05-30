@@ -19,7 +19,7 @@ EXPECTED_RESULT = """
         setQueryParam(.queryParam1, queryParam1QueryParam)
         setHeader(.header1, header1Header)
         setHeader(.header2, header2Header)
-        setBodyParam(.bodyParam1, bodyParam1BodyParam)
+        setBodyParameter(.bodyParam1, bodyParam1BodyParam)
         return self
     }
 """

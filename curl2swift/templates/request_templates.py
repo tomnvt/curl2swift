@@ -21,7 +21,7 @@ HEADER_PARAM_SETTER = """@discardableResult
     """
 
 BODY_PARAM_SETTER = """@discardableResult
-    func setBodyParameter(_ key: BodyParameter, _ value: String) -> Self {
+    func setBodyParameter(_ key: BodyParameter, _ value: Any) -> Self {
         params[key.rawValue] = value
         return self
     }"""

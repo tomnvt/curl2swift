@@ -48,7 +48,7 @@ def create_dynamic_values_setter(
                 enum_case = re.findall("case (.*) =", row)[0]
                 function_parameter_rows.append(f"{enum_case}BodyParam: Any")
                 assignment_rows.append(
-                    f"setBodyParam(.{enum_case}, {enum_case}BodyParam)"
+                    f"setBodyParameter(.{enum_case}, {enum_case}BodyParam)"
                 )
 
     processed_template = TEMPLATE.replace(
