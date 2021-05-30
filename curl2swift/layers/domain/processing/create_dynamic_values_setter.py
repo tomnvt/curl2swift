@@ -1,3 +1,4 @@
+from curl2swift.constants import TWO_LEVEL_INDENT_SEP
 import re
 from curl2swift.layers.domain.parsing.parse_content import ParsedContent
 from typing import Dict
@@ -13,8 +14,6 @@ TEMPLATE = """
         return self
     }
 """
-
-SEPARATOR = "\n        "
 
 
 def create_dynamic_values_setter(
@@ -53,10 +52,10 @@ def create_dynamic_values_setter(
                 )
 
     processed_template = TEMPLATE.replace(
-        "<PARAMETERS>", ("," + SEPARATOR).join(function_parameter_rows)
+        "<PARAMETERS>", ("," + TWO_LEVEL_INDENT_SEP).join(function_parameter_rows)
     )
     processed_template = processed_template.replace(
-        "<SETTERS>", SEPARATOR.join(assignment_rows)
+        "<SETTERS>", TWO_LEVEL_INDENT_SEP.join(assignment_rows)
     )
 
     return processed_template

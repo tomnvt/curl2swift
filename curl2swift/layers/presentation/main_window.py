@@ -16,9 +16,9 @@ class MainWindow(QMainWindow):
         )
         editMenu.addAction(self.request_view_action)
 
-        # TODO: Add Template editor
         self.templates_view_action = QAction("Toggle output view visibility")
         self.templates_view_action.triggered.connect(
             lambda: on_menu_item_tap("output_view")
         )
+        self.setWindowTitle("curl2swift")
         editMenu.addAction(self.templates_view_action)

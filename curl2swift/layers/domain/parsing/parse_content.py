@@ -1,3 +1,4 @@
+from curl2swift.layers.domain.parsing.get_parser import get_curl_parser
 import re
 import sys
 import subprocess
@@ -29,6 +30,7 @@ ParsedContent = namedtuple(
 )
 
 
+# TODO: Split getting cURL from arguments and its succesive cleanup
 def get_curl(curl=None):
     logging.info("Reading curl from --curl option")
 
@@ -71,7 +73,7 @@ def get_parameter_names(request_properties):
     return []
 
 
-def get_request_content(parser, curl, make_request, path_params_dict):
+def get_request_content(curl, make_request, path_params_dict, parser=get_curl_parser()):
     curl = get_curl(curl)
 
     test_curl = "curl -i https://api.github.com/users/defunkt"

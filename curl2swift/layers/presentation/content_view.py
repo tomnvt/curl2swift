@@ -1,4 +1,5 @@
-from curl2swift.layers.presentation.highlighted_text_view import HighlightedTextView
+from curl2swift.layers.presentation.swift_highlighter import SwiftHighlighter
+from curl2swift.layers.presentation.curl_highlighter import CurlHighlighter
 from PyQt5 import QtCore
 from curl2swift.layers.presentation.dynamic_parameters_selector_view import (
     DynamicParamsSelectorView,
@@ -45,8 +46,7 @@ class UserInput(NamedTuple):
 
 class ContentView(QWidget):
 
-    """ Properties """
-
+    # --- Properties ---
     info_labels = []
 
     @property
@@ -56,18 +56,33 @@ class ContentView(QWidget):
         curl = self.curl_text_edit.toPlainText()
         return UserInput(request_name, description, curl)
 
-    """ Init """
-
+    # --- Init ---
     def __init__(self, screen_width):
         super().__init__()
         self.presenter = ContentPresenter(
             self.on_output_change, self.on_dynamic_values_change
         )
         self.selector = DynamicParamsSelectorView(self.presenter)
+        self._layout_views()
+        self._bind_interactions()
+        self.curl_text_edit.setPlainText(EXAMPLE_CURL)
 
-        """ Widgets """
-        # cURL input field
+    # --- Setup ---
+    def _layout_views(self):
+        layout = QHBoxLayout()
+        self.splitter = QSplitter()
+        layout.addWidget(self.splitter)
+
+        self._setup_input_part()
+        self._setup_output_part()
+
+        self.setLayout(layout)
+
+        self.left_half_layout.addWidget(self.selector)
+
+    def _setup_input_part(self):
         self.request_name_input = QLineEdit()
+        self.request_name_input.setText("Example")
         self.request_name_input.setMinimumWidth(200)
         self.description_input = QLineEdit()
         self.description_input.setMinimumWidth(200)
@@ -75,9 +90,22 @@ class ContentView(QWidget):
         self.highlight = CurlHighlighter(self.curl_text_edit.document())
         self.description_input.setText("Add description")
         self.curl_label = QLabel("cURL:")
+        self.left_half_frame = QFrame()
+        self.left_half_layout = QVBoxLayout()
+        self.left_half_frame.setLayout(self.left_half_layout)
 
-        # Info label
-        self.info_label = QWidget()
+        form_layout = QFormLayout()
+        form_layout.addRow("Request name: ", self.request_name_input)
+        form_layout.addRow("Description: ", self.description_input)
+        form_layout.setFormAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
+        form_layout.setContentsMargins(0, 10, 0, 10)
+
+        self.left_half_layout.addLayout(form_layout)
+        self.left_half_layout.addWidget(self.curl_label)
+        self.left_half_layout.addWidget(self.curl_text_edit)
+        self.splitter.addWidget(self.left_half_frame)
+
+    def _setup_output_part(self):
         self.go_button = QPushButton("MAKE REQUEST AND CREATE RESPONSE MAPPING")
         self.test_with_dynamic_values_setter_checkbox = QCheckBox(
             "Use dynamic values setter"
@@ -85,56 +113,17 @@ class ContentView(QWidget):
         self.test_with_dynamic_values_setter_checkbox.stateChanged.connect(
             self.presenter.test_with_dynamic_values_setter_checkbox_change
         )
-
-        self.setWindowTitle("curl2swift")
-
-        """ Layout """
-        layout = QHBoxLayout()
-        splitter = QSplitter()
-        layout.addWidget(splitter)
-
-        # Left half
-        self.left_half_frame = QFrame()
-        self.left_half_layout = QVBoxLayout()
-        self.left_half_frame.setLayout(self.left_half_layout)
-        form_layout = QFormLayout()
-        form_layout.addRow("Request name: ", self.request_name_input)
-        form_layout.addRow("Description: ", self.description_input)
-        form_layout.setFormAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
-        form_layout.setContentsMargins(0, 10, 0, 10)
-        self.left_half_layout.addLayout(form_layout)
-        self.left_half_layout.addWidget(self.curl_label)
-        self.left_half_layout.addWidget(self.curl_text_edit)
-
-        splitter.addWidget(self.left_half_frame)
-
-        # Right half
         self.right_half_frame = QFrame()
-        self.right_half_frame.resize(QtCore.QSize(screen_width / 5, 0))
         self.right_half_layout = QVBoxLayout()
         self.right_half_frame.setLayout(self.right_half_layout)
         self.tabs = self._get_tabs()
         self.right_half_layout.addWidget(self.tabs)
-
-        splitter.addWidget(self.right_half_frame)
-
-        # Overlay
-        self.setLayout(layout)
-
-        self.request_name_input.textChanged.connect(self._on_input_change)
-        self.description_input.textChanged.connect(self._on_input_change)
-        self.curl_text_edit.textChanged.connect(self._on_input_change)
-        self.go_button.clicked.connect(self._on_go_button_click)
-
-        self.request_name_input.setText("Example")
-
-        self.left_half_layout.addWidget(self.selector)
-        self.curl_text_edit.setPlainText(EXAMPLE_CURL)
+        self.splitter.addWidget(self.right_half_frame)
 
     def _get_tabs(self):
         tabs = QTabWidget()
-        self.request_text_edit = HighlightedTextView()
-        self.unit_test_text_edit = HighlightedTextView()
+        self.request_text_edit = SwiftHighlighter()
+        self.unit_test_text_edit = SwiftHighlighter()
         tabs.addTab(
             self._create_tab([self.request_text_edit, self.go_button]),
             "RequestSpecBuilder",
@@ -158,7 +147,12 @@ class ContentView(QWidget):
         tab_widget.setLayout(layout)
         return tab_widget
 
-    """ Interaction binding """
+    # --- Interaction binding ---
+    def _bind_interactions(self):
+        self.request_name_input.textChanged.connect(self._on_input_change)
+        self.description_input.textChanged.connect(self._on_input_change)
+        self.curl_text_edit.textChanged.connect(self._on_input_change)
+        self.go_button.clicked.connect(self._on_go_button_click)
 
     def _on_input_change(self):
         self.presenter.on_input_changed(self.user_input)
@@ -166,8 +160,7 @@ class ContentView(QWidget):
     def _on_go_button_click(self):
         self.presenter.on_go_button_click()
 
-    """ Data handling """
-
+    # --- Data binding ---
     def on_output_change(self, view_model: ViewModel):
         scroll_position = self.unit_test_text_edit.verticalScrollBar().value()
         self.unit_test_text_edit.setText(view_model.unit_test_tab_text)
@@ -179,90 +172,3 @@ class ContentView(QWidget):
 
     def on_dynamic_values_change(self, view_model: ViewModel):
         self.selector.update(view_model)
-
-
-# TODO MOVE
-
-from PyQt5.QtCore import QRegExp
-from PyQt5.QtGui import QColor, QTextCharFormat, QFont, QSyntaxHighlighter
-
-
-def format(color, style=""):
-    """Return a QTextCharFormat with the given attributes."""
-    _color = QColor()
-    _color.setNamedColor(color)
-
-    _format = QTextCharFormat()
-    _format.setForeground(_color)
-    if "bold" in style:
-        _format.setFontWeight(QFont.Bold)
-    if "italic" in style:
-        _format.setFontItalic(True)
-
-    return _format
-
-
-# Syntax styles that can be shared by all languages
-STYLES = {
-    "keyword": format("yellow"),
-    "operator": format("orange"),
-    "string": format("magenta"),
-}
-
-
-class CurlHighlighter(QSyntaxHighlighter):
-
-    keywords = [
-        "curl",
-        "command",
-        "url",
-        "d",
-        "data",
-        "b",
-        "data-binary",
-        "data-raw",
-        "data_urlencode",
-        "X",
-        "H",
-        "header",
-    ]
-
-    methods = ["GET", "POST", "PATCH", "UPDATE", "DELTE"]
-
-    def __init__(self, document):
-        QSyntaxHighlighter.__init__(self, document)
-
-        self.tri_single = (QRegExp("'''"), 1, STYLES["string"])
-        self.tri_double = (QRegExp('"""'), 2, STYLES["string"])
-
-        rules = []
-
-        # Keyword, operator, and brace rules
-        rules += [
-            (r"\b%s\b" % w, 0, STYLES["keyword"]) for w in CurlHighlighter.keywords
-        ]
-        rules += [(r"%s" % o, 0, STYLES["operator"]) for o in CurlHighlighter.methods]
-
-        # All other rules
-        rules += [
-            # Double-quoted string, possibly containing escape sequences
-            (r'"[^"\\]*(\\.[^"\\]*)*"', 0, STYLES["string"]),
-            # Single-quoted string, possibly containing escape sequences
-            (r"'[^'\\]*(\\.[^'\\]*)*'", 0, STYLES["string"]),
-        ]
-
-        # Build a QRegExp for each pattern
-        self.rules = [(QRegExp(pat), index, fmt) for (pat, index, fmt) in rules]
-
-    def highlightBlock(self, text):
-        for expression, nth, format in self.rules:
-            index = expression.indexIn(text, 0)
-
-            while index >= 0:
-                # We actually want the index of the nth match
-                index = expression.pos(nth)
-                length = len(expression.cap(nth))
-                self.setFormat(index, length, format)
-                index = expression.indexIn(text, index + length)
-
-        self.setCurrentBlockState(0)

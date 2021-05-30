@@ -27,7 +27,4 @@ EXPECTED_RESULT = """
 
 def test_create_dynamic_values_setter():
     result = create_dynamic_values_setter(TEST_PARSED_CONTENT, TEST_DYNAMIC_VALUES)
-    print(EXPECTED_RESULT)
-    print()
-    print(result)
     assert result.strip() == EXPECTED_RESULT.strip()

@@ -1,3 +1,4 @@
+from curl2swift.constants import THREE_LEVEL_INDENT_SEP, TWO_LEVEL_INDENT_SEP
 from curl2swift.utils.logger import logging
 from curl2swift.templates.codable_template import CODABLE_TEMPLATE
 
@@ -78,11 +79,11 @@ def create_response_model(response_json, model_name="Response"):
         coding_keys.append("case " + property_name + ' = "' + key + '"')
 
     processed_response_template = CODABLE_TEMPLATE.replace(
-        "<PROPERTIES>", "\n        ".join(properties)
+        "<PROPERTIES>", TWO_LEVEL_INDENT_SEP.join(properties)
     )
 
     processed_response_template = processed_response_template.replace(
-        "<CODING_KEYS>", "\n            ".join(coding_keys)
+        "<CODING_KEYS>", THREE_LEVEL_INDENT_SEP.join(coding_keys)
     ).replace("<MODEL_NAME>", model_name)
     if model_name == DEFAULT_MODEL_NAME:
         processed_response_template += "".join(reversed(submodels))

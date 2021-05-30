@@ -32,17 +32,6 @@ EXTRA_STYLES = {
 }
 
 
-def convert_size(size_bytes):
-    print("Called convert_size")
-    if size_bytes == 0:
-        return "0B"
-    size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
-    i = int(math.floor(math.log(size_bytes, 1024)))
-    p = math.pow(1024, i)
-    s = round(size_bytes / p, 2)
-    return f"{s} {size_name[i]}"
-
-
 class ViewLexer(QsciLexerCustom):
     def __init__(self, lexer_name, style_name):
         super().__init__()
@@ -53,8 +42,8 @@ class ViewLexer(QsciLexerCustom):
         self.cache = {0: ("root",)}
         self.extra_style = EXTRA_STYLES[style_name]
 
-        # Generate QScintilla styles
-        self.font = QFont("Consolas", 14, weight=QFont.Bold)
+        self.font = QFont("", 14, weight=QFont.Medium)
+
         self.token_styles = {}
         index = 0
         for k, v in self.pyg_style:
@@ -63,7 +52,6 @@ class ViewLexer(QsciLexerCustom):
                 self.setColor(QColor(f"#{v['color']}"), index)
             if v.get("bgcolor", None):
                 self.setPaper(QColor(f"#{v['bgcolor']}"), index)
-
             self.setFont(self.font, index)
             index += 1
 
@@ -121,7 +109,6 @@ class ViewLexer(QsciLexerCustom):
                     break
 
     def highlight_slow(self, start, end):
-        style = self.pyg_style
         view = self.editor()
         code = view.text()[start:]
         tokensource = self.get_tokens_unprocessed(code)
@@ -139,21 +126,14 @@ class ViewLexer(QsciLexerCustom):
         return str(style_nr)
 
 
-class HighlightedTextView(QsciScintilla):
+class SwiftHighlighter(QsciScintilla):
     def __init__(self, lexer_name="swift", style_name="monokai"):
         super().__init__()
         view = self
 
-        # -------- Lexer --------
         self.setEolMode(QsciScintilla.EolUnix)
         self.lexer = ViewLexer(lexer_name, style_name)
         self.setLexer(self.lexer)
-
-        # -------- Shortcuts --------
-        self.text_size = 1
-        self.s1 = QShortcut(f"ctrl+1", view, self.reduce_text_size)
-        self.s2 = QShortcut(f"ctrl+2", view, self.increase_text_size)
-        # self.gen_text()
 
         # # -------- Multiselection --------
         self.SendScintilla(view.SCI_SETMULTIPLESELECTION, True)
@@ -198,19 +178,3 @@ class HighlightedTextView(QsciScintilla):
             c = QColor(dct["background"])
             self.resetFoldMarginColors()
             self.setFoldMarginColors(c, c)
-
-    def increase_text_size(self):
-        self.text_size *= 2
-        self.gen_text()
-
-    def reduce_text_size(self):
-        if self.text_size == 1:
-            return
-        self.text_size //= 2
-        self.gen_text()
-
-    def gen_text(self):
-        content = Path(__file__).read_text()
-        while len(content) < self.text_size:
-            content *= 2
-        self.setText(content[: self.text_size])

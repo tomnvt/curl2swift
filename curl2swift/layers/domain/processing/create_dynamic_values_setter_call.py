@@ -1,3 +1,4 @@
+from curl2swift.constants import TWO_LEVEL_INDENT_SEP
 import re
 from curl2swift.layers.domain.parsing.parse_content import ParsedContent
 from typing import Dict
@@ -7,8 +8,6 @@ from curl2swift.layers.domain.parameter_type import ParameterType
 TEMPLATE = """.setDynamicValues(
         <SETTER_CALLS>
     )"""
-
-SEPARATOR = "\n        "
 
 
 def create_dynamic_values_setter_call(
@@ -48,7 +47,7 @@ def create_dynamic_values_setter_call(
         return "// Select which parameters are dynamic first."
 
     processed_template = TEMPLATE.replace(
-        "<SETTER_CALLS>", ("," + SEPARATOR).join(function_parameter_rows)
+        "<SETTER_CALLS>", ("," + TWO_LEVEL_INDENT_SEP).join(function_parameter_rows)
     )
 
     return processed_template

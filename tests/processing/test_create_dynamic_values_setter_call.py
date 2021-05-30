@@ -21,7 +21,4 @@ def test_create_dynamic_values_setter():
     result = create_dynamic_values_setter_call(
         TEST_PARSED_CONTENT, TEST_DYNAMIC_VALUES, TEST_PATH_PARAMS
     )
-    print(result)
-    print()
-    print(EXPECTED_RESULT)
     assert result.strip() == EXPECTED_RESULT.strip()
