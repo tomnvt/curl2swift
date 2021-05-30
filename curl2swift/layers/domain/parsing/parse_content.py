@@ -5,11 +5,13 @@ from urllib.parse import urlparse
 from collections import namedtuple
 from ast import literal_eval
 
-from curl2swift.processing.create_request import create_request
-from curl2swift.processing.get_response_json import get_response_json
-from curl2swift.processing.prepare_enum_cases import prepare_enum_cases
+from curl2swift.layers.domain.processing.create_request import create_request
+from curl2swift.layers.domain.processing.get_response_json import get_response_json
+from curl2swift.layers.domain.processing.prepare_enum_cases import prepare_enum_cases
 from curl2swift.utils.logger import logging
-from curl2swift.parsing.get_request_properties import get_request_properties
+from curl2swift.layers.domain.parsing.get_request_properties import (
+    get_request_properties,
+)
 
 ParsedContent = namedtuple(
     "ParsedContent",

@@ -1,5 +1,5 @@
 from curl2swift.layers.domain.parameter_type import ParameterType
-from curl2swift.processing.request_template.process_query_params import (
+from curl2swift.layers.domain.processing.process_query_params import (
     process_query_params,
 )
 

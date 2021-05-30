@@ -1,6 +1,6 @@
 import sys
 
-import curl2swift.parsing.parse_content as test_class
+import curl2swift.layers.domain.parsing.parse_content as test_class
 
 TEST_CURL = "curl https://api.openweathermap.org/data/2.5/weather?q=hronov&appid=KEY&units=metric"
 

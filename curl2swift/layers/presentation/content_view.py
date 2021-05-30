@@ -1,4 +1,4 @@
-from curl2swift.layers.presentation.highlighted_text_view import View
+from curl2swift.layers.presentation.highlighted_text_view import HighlightedTextView
 from PyQt5 import QtCore
 from curl2swift.layers.presentation.dynamic_parameters_selector_view import (
     DynamicParamsSelectorView,
@@ -107,7 +107,7 @@ class ContentView(QWidget):
 
         # Right half
         self.right_half_frame = QFrame()
-        self.right_half_frame.resize(QtCore.QSize(screen_width/2.5, 0))
+        self.right_half_frame.resize(QtCore.QSize(screen_width / 2.5, 0))
         self.right_half_layout = QVBoxLayout()
         self.right_half_frame.setLayout(self.right_half_layout)
         self.tabs = self._get_tabs()
@@ -130,8 +130,8 @@ class ContentView(QWidget):
 
     def _get_tabs(self):
         tabs = QTabWidget()
-        self.request_text_edit = View("swift")
-        self.unit_test_text_edit = View("swift")
+        self.request_text_edit = HighlightedTextView()
+        self.unit_test_text_edit = HighlightedTextView()
         tabs.addTab(
             self._create_tab([self.request_text_edit, self.go_button]), "Request"
         )

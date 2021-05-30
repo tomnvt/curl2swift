@@ -1,10 +1,9 @@
-from curl2swift.processing.create_dynamic_values_setter_call import (
+from curl2swift.layers.domain.processing.create_dynamic_values_setter_call import (
     create_dynamic_values_setter_call,
 )
 from curl2swift.layers.domain.parameter_type import ParameterType
-from curl2swift.parsing.parse_content import ParsedContent
+from curl2swift.layers.domain.parsing.parse_content import ParsedContent
 import re
-from sys import path
 
 from curl2swift.utils.logger import logging
 from curl2swift.templates.test_template import TEST_TEMPLATE

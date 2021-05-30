@@ -1,5 +1,5 @@
 from tests.constants import TEST_REQUEST
-from curl2swift.processing.get_response_json import get_response_json
+from curl2swift.layers.domain.processing.get_response_json import get_response_json
 
 
 def test_get_response_json():

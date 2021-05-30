@@ -1,6 +1,9 @@
 from curl2swift.layers.domain.parameter_type import ParameterType
-from curl2swift.parsing.get_parser import get_curl_parser
-from curl2swift.parsing.parse_content import ParsedContent, get_request_content
+from curl2swift.layers.domain.parsing.get_parser import get_curl_parser
+from curl2swift.layers.domain.parsing.parse_content import (
+    ParsedContent,
+    get_request_content,
+)
 from curl2swift.run_main_process import run_main_process
 
 from dataclasses import dataclass

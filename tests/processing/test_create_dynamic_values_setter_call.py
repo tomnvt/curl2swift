@@ -1,13 +1,7 @@
 from tests.processing.constants import TEST_DYNAMIC_VALUES, TEST_PARSED_CONTENT
-from curl2swift.processing.create_dynamic_values_setter_call import (
+from curl2swift.layers.domain.processing.create_dynamic_values_setter_call import (
     create_dynamic_values_setter_call,
 )
-from curl2swift.parsing.parse_content import ParsedContent
-from curl2swift.layers.domain.parameter_type import ParameterType
-from curl2swift.processing.create_dynamic_values_setter import (
-    create_dynamic_values_setter,
-)
-
 
 EXPECTED_RESULT = """
     .setDynamicValues(

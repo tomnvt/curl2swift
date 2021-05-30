@@ -1,5 +1,5 @@
 import re
-from curl2swift.parsing.parse_content import ParsedContent
+from curl2swift.layers.domain.parsing.parse_content import ParsedContent
 from typing import Dict
 from curl2swift.layers.domain.parameter_type import ParameterType
 
@@ -39,7 +39,9 @@ def create_dynamic_values_setter_call(
     for dynamic_value in dynamic_values[ParameterType.BODY_PARAM]:
         for index, param in enumerate(parsed_content.param_names):
             if param[0] == dynamic_value:
-                enum_case = re.findall("case (.*) =", parsed_content.body_param_rows[index])[0]
+                enum_case = re.findall(
+                    "case (.*) =", parsed_content.body_param_rows[index]
+                )[0]
                 function_parameter_rows.append(f'{enum_case}BodyParam: "{param[1]}"')
 
     if not function_parameter_rows:

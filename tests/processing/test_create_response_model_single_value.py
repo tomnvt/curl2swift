@@ -1,5 +1,7 @@
 from ast import literal_eval
-from curl2swift.processing.create_response_model import create_response_model
+from curl2swift.layers.domain.processing.create_response_model import (
+    create_response_model,
+)
 
 RESPONSE = "12345"
 

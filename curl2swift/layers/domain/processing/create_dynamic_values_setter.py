@@ -1,5 +1,5 @@
 import re
-from curl2swift.parsing.parse_content import ParsedContent
+from curl2swift.layers.domain.parsing.parse_content import ParsedContent
 from typing import Dict
 from curl2swift.layers.domain.parameter_type import ParameterType
 
