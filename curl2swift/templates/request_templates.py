@@ -1,6 +1,6 @@
 QUERY_PARAM_SETTER = """
     @discardableResult
-    func setQueryParam(_ key: QueryParam, _ value: String) -> Self {
+    func setQueryParameter(_ key: QueryParam, _ value: String) -> Self {
         queryParams[key.rawValue] = value
         return self
     }
@@ -55,8 +55,12 @@ class <REQUEST_NAME>Request: RequestSpecBuilder {
                   headers: [String: String] = [:],
                   params: [String: Any] = [:]) {
         super.init(baseURL: baseURL, path: path, method: method, headers: headers, params: params)
+        set(.baseURL("<URL>"))
         set(.path("<PATH>"))
+        <PATH_PARAMS_INIT>
         <QUERY_PARAMS_INIT>
+        <HEADER_PARAMS_INIT>
+        <BODY_PARAMS_INIT>
         set(.method(<METHOD>))
     }
 }
@@ -70,5 +74,7 @@ extension <REQUEST_NAME>Request {
     <HEADER_PARAM_SETTER>
 
     <BODY_PARAM_SETTER>
+
+    <DYNAMIC_VALUES_SETTER>
 }
 """

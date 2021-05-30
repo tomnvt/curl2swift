@@ -1,5 +1,7 @@
 from ast import literal_eval
-from curl2swift.processing.create_response_model import create_response_model
+from curl2swift.layers.domain.processing.create_response_model import (
+    create_response_model,
+)
 
 RESPONSE_JSON = """
 {
@@ -156,6 +158,7 @@ EXPECTED_RESULT = """
         }
     }
 """
+
 
 def test_create_response_model():
     json_dict = literal_eval(RESPONSE_JSON)
