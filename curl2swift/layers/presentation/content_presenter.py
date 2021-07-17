@@ -95,7 +95,7 @@ class ContentPresenter:
 
         self.dynamic_values = dynamic_values
 
-        request, unit_test = generate_ouput(
+        request, unit_test, _ = generate_ouput(
             user_input=self._user_input,
             is_windowed=True,
             should_make_request=make_request,

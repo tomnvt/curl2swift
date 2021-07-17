@@ -90,7 +90,7 @@ def _process_inputs(
     if not is_windowed:
         _show_output(unit_test, "TEST")
 
-    return request, unit_test
+    return request, unit_test, response_json
 
 
 def generate_ouput(
