@@ -84,7 +84,7 @@ def _get_body_param_setters(content, dynamic_values):
         value = param[1]
         enum_case = re.findall("case (.*) =", content.body_param_rows[index])[0]
         body_param_setters.append(
-            ".setBodyParameter(." + enum_case + ', "' + value + '")'
+            ".setBodyParameter(." + enum_case + ', "' + str(value) + '")'
         )
     return body_param_setters
 
