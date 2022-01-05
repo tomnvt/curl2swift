@@ -134,7 +134,7 @@ def _process_body_params(processed_template, content, dynamic_values):
         enum_case = re.findall("case (.*) =", row)[0]
         if param_pair[0] not in dynamic_values[ParameterType.BODY_PARAM]:
             body_param_rows.append(
-                "setBodyParameter(." + enum_case + ', "' + param_pair[1] + '")'
+                "setBodyParameter(." + enum_case + ', "' + str(param_pair[1]) + '")'
             )
 
     if body_param_rows:
