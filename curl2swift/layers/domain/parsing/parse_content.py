@@ -49,7 +49,7 @@ def get_curl(curl=None):
 
     if " POST " in curl and "-X POST" not in curl:
         curl = curl.replace("POST", "-X POST", 1)
-    if "GET" in curl and "-X GET" not in curl:
+    if " GET " in curl and "-X GET" not in curl:
         curl = curl.replace("GET", "-X GET", 1)
 
     curl = curl.replace("-v", "")
